@@ -1,0 +1,22 @@
+<h2>Вхід</h2>
+<form method="get" action="/sign-in">
+  {% csrf_token %}
+  
+  <label for="email">Email:</label>
+  <input type="text" name="email" id="email">
+
+  <label for="password">Пароль:</label>
+  <input type="password" name="password" id="password">
+
+  <button type="submit">Увійти</button>
+</form>
+
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+

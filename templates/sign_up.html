@@ -1,0 +1,28 @@
+<h2>Реєстрація</h2>
+<form method="get" action="/sign-up">
+  {% csrf_token %}
+    
+    
+  <label for="email">Email:</label>
+  <input type="email" name="email" id="email" required>
+
+
+  <label for="password">Пароль:</label>
+  <input type="password" name="password" id="password" required>
+
+
+  <label for="password_confirm">Підтвердження паролю:</label>
+  <input type="password" name="password_confirm" id="password_confirm" required>
+
+  <button type="submit">Зареєструватися</button>
+</form>
+
+
+
+{% if messages %}
+  <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}

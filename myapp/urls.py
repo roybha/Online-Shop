@@ -8,4 +8,7 @@ urlpatterns = [
 
     # path for login as existing user
     path('sign-in', views.test_sign_in, name='test_sign_in'),
+
+    # path fot log out from app
+    path('log-out', views.test_log_out, name='test_log_out'),
 ]
