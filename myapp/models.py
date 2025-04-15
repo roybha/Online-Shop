@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.core.validators import RegexValidator
 from django.db import models
 from decimal import Decimal
 from datetime import date
@@ -94,6 +95,9 @@ class Category(models.Model):
         # specification of table's name
         db_table = 'categories'
 
+    def __str__(self):
+        return self.name
+
 
 class Brand(models.Model):
     """
@@ -113,6 +117,9 @@ class Brand(models.Model):
         # specification of table's name
         db_table = 'brands'
 
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     """
@@ -131,7 +138,7 @@ class Product(models.Model):
     # FK that connect specific product with specific category of products(name of specific table)
     category : int = models.ForeignKey(Category, on_delete=models.CASCADE)
 
-    # identificator within specified table
+    # identifier within specified table
     category_prod_id : int = models.IntegerField()
 
     # FK that connect product with specific brand
@@ -171,3 +178,144 @@ class OrderItem(models.Model):
 
         # specification of table's name
         db_table = 'order_items'
+
+class Laptop(models.Model):
+    """
+    Class that represents a table structure of  products of laptop type in database
+    """
+
+    # specific autoincrement id for record
+    id : int = models.AutoField(primary_key=True)
+
+    # diagonal screen size in inches
+    screen_size : Decimal = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # screen resolution in pixels
+    scree_resolution : str = models.CharField(
+        max_length=9,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{3,4}x\d{3,4}$',
+                message='Формат має бути як 1920x1080'
+            )
+        ]
+    )
+
+    # reference rate of screen in hertz
+    screen_ref_rate : int = models.IntegerField(default=60)
+
+    # FK that represents brand of laptop's cpu
+    cpu_brand : int = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='cpu_brand')
+
+    # name of laptop's CPU model
+    cpu_model : str = models.CharField(max_length=15)
+
+    # quantity of cores inside the CPU
+    cpu_cores_num : int = models.IntegerField(default=4)
+
+    # frequency of CPU in gigahertz
+    cpu_frequency : Decimal = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # volume of laptop's RAM
+    ram : int = models.IntegerField(default=4)
+
+    # type of RAM
+    ram_type : str = models.CharField(max_length=5)
+
+    # volume of laptop's main storage in gigabytes
+    storage : int = models.IntegerField(default=120)
+
+    # type of main storage
+    storage_type : str = models.CharField(max_length=5)
+
+    # FK that represent brand of laptop's GPU
+    gpu_brand : int = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='gpu_brand')
+
+    # name of laptop's gpu model
+    gpu_model : str = models.CharField(max_length=15)
+    class Meta:
+        """
+        Internal class for additional setting of table
+        """
+
+        # specification of table's name
+        db_table = 'laptops'
+
+class Smartphone(models.Model):
+    """
+    Class that represents a table structure of products' smartphones in database
+    """
+
+    # specific autoincrement id for record
+    id : int = models.AutoField(primary_key=True)
+
+    # diagonal screen size in inches
+    screen_size : Decimal = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # screen resolution in pixels
+    screen_resolution : str = models.CharField(
+        max_length=9,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{3,4}x\d{3,4}$',
+                message="Формат має бути як 1920x1080"
+            )
+        ]
+    )
+
+    # reference rate of screen in hertz
+    screen_ref_rate : int = models.IntegerField(default=60)
+
+    # quantity of sim slots in smartphone
+    sim_quantity : int = models.IntegerField(default=1)
+
+    # supported connection type
+    network_generations : str = models.CharField(max_length=20)
+
+    # name of smartphone's CPU model
+    cpu_model : str = models.CharField(max_length=15)
+
+    # quantity of cores inside smartphone CPU
+    cpu_cores_num : int = models.IntegerField(default=8)
+
+    # volume of smartphone's RAM
+    ram : int = models.IntegerField(default=4)
+
+    # volume of smartphone's main storage
+    storage : int = models.IntegerField(default=120)
+
+    # main camera resolution in megapixels
+    main_camera : str  = models.CharField(max_length=30)
+
+    # max video resolution that are supported
+    max_video_resolution : str = models.CharField(
+        max_length=30,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{3,5}\sx\s\d{3,5}(?:\s[\w\s]{2,15})?$',
+                message='Формат має бути як "7680 x 4320" або "7680 x 4320 8K UHD"'
+            )
+        ]
+    )
+
+    # frontal camera resolution in megapixels
+    frontal_camera : str = models.CharField(max_length=30)
+
+    # indicator that show NFC support by smartphone
+    nfc : bool = models.BooleanField(default=False)
+
+    # type of connection slot for charging
+    connector_type : str = models.CharField(max_length=10)
+
+    # capacity of battery in milliampere per hour
+    battery : int  = models.IntegerField(default=2000)
+
+    # weight of smartphone in grams
+    weight : int = models.IntegerField(default=200)
+    class Meta:
+        """
+        Internal class for additional setting of table
+        """
+
+        # specification of table's name
+        db_table = 'smartphones'

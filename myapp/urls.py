@@ -11,4 +11,7 @@ urlpatterns = [
 
     # path fot log out from app
     path('log-out', views.test_log_out, name='test_log_out'),
+
+    # path for add laptop to shop
+    path('add_laptop', views.add_laptop_product, name='add_laptop_product'),
 ]

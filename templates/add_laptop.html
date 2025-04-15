@@ -1,0 +1,10 @@
+<form method="post">
+  {% csrf_token %}
+  <h3>Дані ноутбука</h3>
+  {{ laptop_form.as_p }}
+
+  <h3>Дані продукту</h3>
+  {{ product_form.as_p }}
+
+  <button type="submit">Додати ноутбук</button>
+</form>
