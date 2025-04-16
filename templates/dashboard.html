@@ -1,4 +1,38 @@
-<!-- templates/dashboard.html -->
-<h1>Привіт, {{ user.email }}!</h1>
-<p>Ви успішно увійшли в систему.</p>
-<a href="{% url 'test_log_out' %}">Вийти</a>
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Панель користувача</title>
+</head>
+<body>
+
+  <h1>Привіт, {{ user.email }}!</h1>
+  <p>Ви успішно увійшли в систему.</p>
+  {% if user.is_authenticated %}
+  {% if user.role == 'seller' %}
+    <h2>Меню продавця</h2>
+    <ul>
+      <li><a href="{% url 'add_laptop_product' %}">Додати ноутбук</a></li>
+      <li><a href="{% url 'view_orders' %}">Переглянути замовлення</a></li>
+    </ul>
+  {% elif user.role == 'user' %}
+    <h2>Меню покупця</h2>
+    <ul>
+      <li><a href="{% url 'shop' %}">Перейти до магазину</a></li>
+      <li><a href="{% url 'my_orders' %}">Мої замовлення</a></li>
+    </ul>
+  {% endif %}
+{% endif %}
+
+  <a href="{% url 'log_out' %}">Вийти</a>
+
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+</body>
+</html>

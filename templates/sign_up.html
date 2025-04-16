@@ -1,28 +1,36 @@
-<h2>Реєстрація</h2>
-<form method="get" action="/sign-up">
-  {% csrf_token %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Реєстрація</title>
+</head>
+<body>
+
+  <h2>Реєстрація</h2>
+
+  <form method="post" action="/sign-up">
+    {% csrf_token %}
     
-    
-  <label for="email">Email:</label>
-  <input type="email" name="email" id="email" required>
+    <label for="email">Email:</label><br>
+    <input type="email" name="email" id="email" required><br><br>
 
+    <label for="password">Пароль:</label><br>
+    <input type="password" name="password" id="password" required><br><br>
 
-  <label for="password">Пароль:</label>
-  <input type="password" name="password" id="password" required>
+    <label for="password_confirm">Підтвердження паролю:</label><br>
+    <input type="password" name="password_confirm" id="password_confirm" required><br><br>
 
+    <button type="submit">Зареєструватися</button>
+  </form>
 
-  <label for="password_confirm">Підтвердження паролю:</label>
-  <input type="password" name="password_confirm" id="password_confirm" required>
+  {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 
-  <button type="submit">Зареєструватися</button>
-</form>
+</body>
+</html>
 
-
-
-{% if messages %}
-  <ul>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}

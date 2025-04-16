@@ -3,52 +3,88 @@ from myapp.services.db_service import DbService
 from django.contrib.auth import logout
 from django.contrib import messages
 from myapp.models import User
-from .forms import LaptopForm,ProductForm
+from .forms import LaptopForm, ProductForm
 from .models import Category
 
 
-def test_sign_up(request):
+def sign_up(request):
 
     """
-    Test method to sign up a new user
+    Method to sign up a new user
     :param request: Http request object
     :return: sign up page
     """
-    if request.GET.get('email') is not None and request.GET.get('password') is not None:
-        email = request.GET.get('email')
-        password = request.GET.get('password')
-        password_confirm = request.GET.get('password_confirm')
+
+    # check if both email and password
+    # are provided in the POST request
+    if (request.POST.get('email') is not None
+            and request.POST.get('password') is not None):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        password_confirm = request.POST.get('password_confirm')
+
+        # check if passwords match
         if password != password_confirm:
             messages.error(request, 'Passwords must match')
-            return render(request,'sign_up.html')
+            return render(request, 'sign_up.html')
+
+        # try to register the new user using the DbService
         new_user = DbService.sign_up(email=email, password=password)
+
+        # if a valid User object is returned, registration is successful
         if isinstance(new_user, User):
-            messages.info(request, f"Користувача {new_user.email} успішно зареєстровано!")
+            messages.info(
+                request,
+                f"Користувача {new_user.email} успішно зареєстровано!"
+            )
+
+            # return sign_in html form
             return render(request, 'sign_in.html')
         else:
-            messages.info(request, f"Помилка авторизації")
+            # handle registration failure
+            messages.info(request, "Помилка авторизації")
+
+            # return sign_up html form
             return render(request, 'sign_up.html')
     else:
+
+        # if not a POST request or required fields are missing,
+        # render the sign_up html form
         return render(request, 'sign_up.html')
 
-def test_sign_in(request):
+
+def sign_in(request):
     """
-    Test method for signing in as an existing user
+    Method for signing in as an existing user
     :param request: Http request object
     :return: sign in page
     """
-    if request.GET.get('email')is not None and request.GET.get('password') is not None:
-        email = request.GET.get('email')
-        password = request.GET.get('password')
+
+    # check if both email and password
+    # are provided in the POST request
+    if (request.POST.get('email') is not None
+            and request.POST.get('password') is not None):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # try to authenticate user using the DbService
         user = DbService.sign_in(request, email, password)
+        # if authentication succeeds,
+        # redirect to dashboard with user cont
         if user is not None:
             return render(request, 'dashboard.html', {'user': user})
         else:
+
+            # if authentication failed,
+            # return back to sign-in page
             return render(request, 'sign_in.html')
     else:
-        return render(request,'sign_in.html')
+        # if not a POST request or fields are missing,
+        # render the sign-in form
+        return render(request, 'sign_in.html')
 
-def test_log_out(request):
+
+def log_out(request):
     """
     Method of logging out from app
     :param request: Http request object
@@ -58,7 +94,8 @@ def test_log_out(request):
     logout(request)
 
     # Redirect on the sing in page after exit
-    return redirect('test_sign_in')
+    return redirect('sign_in')
+
 
 def add_laptop_product(request):
     """
@@ -83,17 +120,19 @@ def add_laptop_product(request):
             # create, but do not save the product object yet
             product = product_form.save(commit=False)
 
-            # assign the category_prod_id field the identifier of the newly saved laptop
-            product.category_prod_id= laptop.id
+            # assign the category_prod_id field
+            # the identifier of the newly saved laptop
+            product.category_prod_id = laptop.id
 
-            # find the category object with the name "laptop" and bind it to the product
+            # find the category object with
+            # the name "laptop" and bind it to the product
             product.category = Category.objects.get(name='laptop')
 
             # store the finished product object in the database
             product.save()
 
             # successful addition - redirect to login/success page
-            return redirect('test_sign_in')
+            return redirect('sign_in')
 
     # if the method is GET, we create empty forms to display on the page
     else:
@@ -101,4 +140,11 @@ def add_laptop_product(request):
         product_form = ProductForm()
 
     # return an HTML page with both forms
-    return render(request, 'add_laptop.html', {'laptop_form': laptop_form, 'product_form': product_form})
+    return render(
+        request,
+        'add_laptop.html',
+        {
+            'laptop_form': laptop_form,
+            'product_form': product_form
+        }
+    )
