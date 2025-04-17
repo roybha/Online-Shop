@@ -96,7 +96,7 @@ def log_out(request):
     logout(request)
 
     # Redirect on the sing in page after exit
-    return redirect('sign_in')
+    return redirect('dashboard')
 
 
 def add_laptop_product(request):

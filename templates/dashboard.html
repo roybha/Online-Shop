@@ -7,25 +7,33 @@
 <body>
 
   {% if user.is_authenticated %}
-      <h1>Привіт, {{ user.email }}!</h1>
-      {% if user.role == 'seller' %}
+    <h1>Привіт, {{ user.email }}!</h1>
+
+    {% if user.role == 'seller' %}
         <h2>Меню продавця</h2>
         <ul>
-          <li><a href="{% url 'add_laptop_product' %}">Додати ноутбук</a></li>
-          <li>Додати смартфон</li>
-          <li>Обробити замовлення</li>
+            <li><a href="{% url 'add_laptop_product' %}">Додати ноутбук</a></li>
+            <li>Додати смартфон</li>
+            <li>Обробити замовлення</li>
         </ul>
-      {% endif %}
-  {% endif %}
+    {% else %}
+        <h2>Меню покупця</h2>
+        <ul>
+            <li>Замовити товар</li>
+            <li>Мої замовлення</li>
+            <li>Оформити замовлення</li>
+        </ul>
+    {% endif %}
 
-  <h2>Меню покупця</h2>
-  <ul>
-      <li>Замовити товар</li>
-      {% if user.is_authenticated %}
-        <li>Мої замовлення</li>
-      {% endif %}
-      <li>Оформити замовлення</li>
-  </ul>
+{% else %}
+    <h2>Меню покупця</h2>
+    <ul>
+        <li>Замовити товар</li>
+        <li>Оформити замовлення</li>
+    </ul>
+{% endif %}
+
+  
 
   {% if user.is_authenticated %}
     <a href="{% url 'log_out' %}">Вийти</a>
