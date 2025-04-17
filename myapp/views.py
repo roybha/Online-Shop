@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from myapp.services.db_service import DbService
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from django.contrib import messages
 from myapp.models import User
 from .forms import LaptopForm, ProductForm
@@ -72,7 +72,10 @@ def sign_in(request):
         # if authentication succeeds,
         # redirect to dashboard with user cont
         if user is not None:
-            return render(request, 'dashboard.html', {'user': user})
+            login(request, user)
+            request.session.save()
+            print("User logged in:", request.user)
+            return redirect('dashboard')
         else:
 
             # if authentication failed,
@@ -148,3 +151,8 @@ def add_laptop_product(request):
             'product_form': product_form
         }
     )
+
+def dashboard(request):
+    print(f"Is user authenticated: {request.user.is_authenticated}")
+    print(f"User email: {request.user.email}")
+    return render(request, 'dashboard.html')

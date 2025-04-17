@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from myapp.models import User
 from myapp.response_models.user_response_model import UserResponse
 from myapp.services.credentials_service import CredentialsService
-from django.contrib.auth import login
 
 
 class DbService:
@@ -44,9 +43,9 @@ class DbService:
 
             # Checking of the password
             if CredentialsService.check_password(user.password, password):
-                # If the password is correct -> allow to enter and return
-                login(request, user)
-                return UserResponse(user.id, user.email)
+                # If the password is correct
+                # -> allow to enter and return user
+                return user
             else:
                 # Else -> don't allow to enter and return None
                 return None
