@@ -68,7 +68,7 @@ def sign_in(request):
         password = request.POST.get('password')
 
         # try to authenticate user using the DbService
-        user = DbService.sign_in(request, email, password)
+        user = DbService.sign_in(email, password)
         # if authentication succeeds,
         # redirect to dashboard with user cont
         if user is not None:

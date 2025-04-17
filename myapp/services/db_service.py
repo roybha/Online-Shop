@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
 from myapp.models import User
-from myapp.response_models.user_response_model import UserResponse
 from myapp.services.credentials_service import CredentialsService
 
 
@@ -33,7 +32,7 @@ class DbService:
             return str(e)
 
     @staticmethod
-    def sign_in(request, email: str, password: str):
+    def sign_in(email: str, password: str):
         """
         Entering into account with an email and a password
         """
