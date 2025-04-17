@@ -14,4 +14,7 @@ urlpatterns = [
 
     # path for add laptop to shop
     path('add_laptop', views.add_laptop_product, name='add_laptop_product'),
+
+    # path for dashboard
+    path('dashboard', views.dashboard, name='dashboard'),
 ]

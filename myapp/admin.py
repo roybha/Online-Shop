@@ -59,8 +59,11 @@ class UserCreationForm(forms.ModelForm):
         # create the user object, but we don't save it to the database yet
         user = super().save(commit=False)
 
+        # get role choice made by admin
+        role = self.cleaned_data.get("role")
+
         # hashing the password using a custom service
-        if user.role == 'admin':
+        if role == 'admin':
             user.set_password(self.cleaned_data["password1"])
         else:
             user.password = CredentialsService.hash_password(self.cleaned_data["password1"])

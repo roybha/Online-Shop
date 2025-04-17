@@ -38,6 +38,8 @@ class UserManager(BaseUserManager):
             # if user's role isn't admin hash in another way
             user.password = CredentialsService.hash_password(password)
 
+        user.is_active = True
+
         # save user instance in DB
         user.save(using=self._db)
 
