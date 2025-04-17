@@ -27,7 +27,7 @@ class DbService:
             # Creating of new user
             user = User.objects.create_user(
                 email=email,
-                password=CredentialsService.hash_password(password),
+                password=password,
             )
             return user
         except Exception as e:

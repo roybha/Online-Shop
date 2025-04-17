@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.base_user import BaseUserManager
 from myapp.services.credentials_service import CredentialsService
 
@@ -20,14 +21,22 @@ class UserManager(BaseUserManager):
         elif not password:
             raise ValueError('Пароль має бути вказаний')
 
-        # normalizing email
-        email = self.normalize_email(email)
+        # automatically set username
+        if 'username' not in extra_fields or not extra_fields['username']:
+            extra_fields['username'] = f'{email.split("@")[0]}_{uuid.uuid4().hex[:6]}'
 
-        # setting normalized email as user's email
+        # set role by default
+        role = extra_fields.get('role', 'user')
+
+        # set user's email
         user = self.model(email=email, **extra_fields)
 
-        # hashing password that were entered and set it as user's password
-        user.password = CredentialsService.hash_password(password)
+        # hash user's password in one way if role is  admin
+        if role == 'admin':
+            user.set_password(password)
+        else:
+            # if user's role isn't admin hash in another way
+            user.password = CredentialsService.hash_password(password)
 
         # save user instance in DB
         user.save(using=self._db)
@@ -52,6 +61,9 @@ class UserManager(BaseUserManager):
 
         # setting is_active column as True
         extra_fields.setdefault('is_active', True)
+
+        # if we are creating superuser his role will be admin
+        extra_fields.setdefault('role', 'admin')
 
         # raise ValueError if is_staff | is_superuser isn't True
         if extra_fields.get('is_staff') is not True:
