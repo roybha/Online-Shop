@@ -6,27 +6,32 @@
 </head>
 <body>
 
-  <h1>Привіт, {{ user.email }}!</h1>
-  <p>Ви успішно увійшли в систему.</p>
   {% if user.is_authenticated %}
-  {% if user.role == 'seller' %}
-    <h2>Меню продавця</h2>
-    <ul>
-      <li><a href="{% url 'add_laptop_product' %}">Додати ноутбук</a></li>
-      <li>Додати смартфон</li>
-      <li>Обробити замовлення</li>
-    </ul>
-  {% elif user.role == 'user' %}
-    <h2>Меню покупця</h2>
-    <ul>
-        <li> Замовити товар</li>
-        <li>Мої замовлення</li>
-        <li>Оформити замовлення</li>
-    </ul>
+      <h1>Привіт, {{ user.email }}!</h1>
+      {% if user.role == 'seller' %}
+        <h2>Меню продавця</h2>
+        <ul>
+          <li><a href="{% url 'add_laptop_product' %}">Додати ноутбук</a></li>
+          <li>Додати смартфон</li>
+          <li>Обробити замовлення</li>
+        </ul>
+      {% endif %}
   {% endif %}
-{% endif %}
 
-  <a href="{% url 'log_out' %}">Вийти</a>
+  <h2>Меню покупця</h2>
+  <ul>
+      <li>Замовити товар</li>
+      {% if user.is_authenticated %}
+        <li>Мої замовлення</li>
+      {% endif %}
+      <li>Оформити замовлення</li>
+  </ul>
+
+  {% if user.is_authenticated %}
+    <a href="{% url 'log_out' %}">Вийти</a>
+  {% else %}
+    <a href="{% url 'sign_in' %}">Увійти</a> | <a href="{% url 'sign_up' %}">Зареєструватися</a>
+  {% endif %}
 
   {% if messages %}
     <ul>

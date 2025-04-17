@@ -74,7 +74,6 @@ def sign_in(request):
         if user is not None:
             login(request, user)
             request.session.save()
-            print("User logged in:", request.user)
             return redirect('dashboard')
         else:
 
@@ -153,6 +152,4 @@ def add_laptop_product(request):
     )
 
 def dashboard(request):
-    print(f"Is user authenticated: {request.user.is_authenticated}")
-    print(f"User email: {request.user.email}")
     return render(request, 'dashboard.html')
