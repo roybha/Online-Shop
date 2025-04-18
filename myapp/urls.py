@@ -20,4 +20,7 @@ urlpatterns = [
 
     # path for dashboard
     path('dashboard', views.dashboard, name='dashboard'),
+
+    # path for get all products by specific category
+    path('products/<str:category_name>/', views.get_all_products_by_category, name='products_by_category'),
 ]

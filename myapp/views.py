@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from myapp.services.db_service import DbService
 from django.contrib.auth import logout, login
 from django.contrib import messages
-from myapp.models import User, Brand
+from myapp.models import User, Brand, Product
 from .forms import LaptopForm, ProductForm, SmartphoneForm
 from .models import Category
 
@@ -152,8 +152,7 @@ def add_laptop_product(request):
             # create, but do not save the product object yet
             product = product_form.save(commit=False)
 
-            # assign the category_prod_id field
-            # the identifier of the newly saved laptop
+            # connect product's category id and category's own id
             product.category_prod_id = laptop.id
 
             # find the category object with
@@ -270,5 +269,34 @@ def add_smartphone_product(request):
         }
     )
 
+def get_all_products_by_category(request, category_name: str):
+    """
+    Method for getting all products by  specific category
+    :param request: Http request object
+    :param category_name: str in which category we want to get  all products
+    :return: page of available products by category
+    """
+
+    # search specific category in correspond table
+    category = Category.objects.get(name=category_name)
+
+    # search products that represents this category
+    products = Product.objects.filter(category=category.id)
+
+    # choose the correct word for view's field
+    category_for_view = 'ноутбуки' if category.name == 'laptop' else 'смартфони'
+    return render(request,
+                  'products_by_category.html',
+                  {
+                   'products': products,
+                   'category_name': category_for_view
+                   }
+    )
+
 def dashboard(request):
+    """
+    Method for showing user's panel
+    :param request: Http request object
+    :return: dashboard html page
+    """
     return render(request, 'dashboard.html')
