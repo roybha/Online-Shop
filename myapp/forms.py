@@ -7,6 +7,21 @@ class LaptopForm(forms.ModelForm):
     """
     Class that represents a form for Laptop in process of it's adding to db
     """
+
+    #special field for cpu brand input
+    cpu_brand_name = forms.CharField(
+        max_length=50,
+        label='CPU бренд',
+        widget=forms.TextInput(attrs={'placeholder': 'AMD'})
+    )
+
+    # special field for gpu brand input
+    gpu_brand_name = forms.CharField(
+        max_length=50,
+        label='GPU бренд',
+        widget=forms.TextInput(attrs={'placeholder': 'NVIDIA'})
+    )
+
     class Meta:
         """
         Internal class for setting a form for Laptop
@@ -16,7 +31,7 @@ class LaptopForm(forms.ModelForm):
         model = Laptop
 
         # setting input boxes for all of them
-        fields = '__all__'
+        exclude = ['gpu_brand', 'cpu_brand']
 
         # setting input format for some fields
         widgets = {
@@ -73,6 +88,16 @@ class ProductForm(forms.ModelForm):
     """
     Class that represents a form for Product in process of it's adding to db
     """
+
+    # special field for input brand name
+    brand_name = forms.CharField(
+        max_length=50,
+        label='Бренд',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Acer',
+            'maxlength': '50'
+        })
+    )
     class Meta:
         """
         Internal class for setting a form for Product
@@ -82,7 +107,7 @@ class ProductForm(forms.ModelForm):
         model = Product
 
         # exclude 2 fields which are setting later
-        exclude = ['category_prod_id', 'category']
+        exclude = ['category_prod_id', 'category', 'brand']
 
         # setting input format for some fields
         widgets = {
@@ -98,5 +123,8 @@ class ProductForm(forms.ModelForm):
                 'step': '0.01',
                 'min': '5000',
                 'max': '120000'
+            }),
+            'image_url': forms.URLInput(attrs={
+                'placeholder': 'https://example.com/image.jpg'
             }),
         }

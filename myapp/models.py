@@ -172,6 +172,9 @@ class Product(models.Model):
     # price of product
     price: Decimal = models.DecimalField(max_digits=10, decimal_places=2)
 
+    # url for image product
+    image_url: str = models.URLField()
+
     class Meta:
         """
         Internal class for additional setting of table
