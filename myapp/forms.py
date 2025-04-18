@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Laptop,  Product
+from .models import Laptop, Product, Smartphone
 
 
 class LaptopForm(forms.ModelForm):
@@ -82,6 +82,112 @@ class LaptopForm(forms.ModelForm):
                 'maxlength': '15'
             }),
         }
+
+
+class SmartphoneForm(forms.ModelForm):
+    """
+    Class that represents a form for Smartphone in process of it's adding to db
+    """
+
+    # possible list of values
+    # for network generations
+    NETWORK_GENERATION_CHOICES = [
+        ('2G', '2G'),
+        ('3G', '3G'),
+        ('4G', '4G'),
+        ('5G', '5G'),
+    ]
+
+    # make specified input field
+    # for possible network generations
+    network_generations = forms.MultipleChoiceField(
+        choices=NETWORK_GENERATION_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        label="Типи зв’язку"
+    )
+    class Meta:
+        """
+        Internal class for setting a form for Smartphone
+        """
+
+        # get fields from db's Smartphone table
+        model = Smartphone
+
+        # get all fields from Smartphone model
+        fields = '__all__'
+
+        widgets = {
+            'screen_size': forms.NumberInput(attrs={
+                'step': '0.1',
+                'placeholder': '4.3',
+                'max': '10'
+            }),
+            'scree_resolution': forms.TextInput(attrs={
+                'placeholder': '1920x1080',
+                'pattern': r'^\d{3,4}x\d{3,4}$'
+            }),
+            'screen_ref_rate': forms.NumberInput(attrs={
+                'min': '60',
+                'max': '240'
+            }),
+            'sim_quantity': forms.NumberInput(attrs={
+                'min': '1',
+                'step': '1',
+                'max': '3'
+            }),
+            'network_generations': forms.TextInput(attrs={
+                'placeholder': 'Введіть типи зв’язку через кому, напр. 2G,3G,4G,5G'
+            }),
+            'cpu_model': forms.TextInput(attrs={
+                'placeholder': 'Exynos 2400e',
+            }),
+            'cpu_cores_num': forms.NumberInput(attrs={
+                'min': '4',
+                'step': '1',
+                'max': '12'
+            }),
+            'ram': forms.NumberInput(attrs={
+                'min': '2',
+                'step': '1',
+                'max': '12'
+            }),
+            'storage': forms.NumberInput(attrs={
+                'min': '64',
+                'step': '10',
+                'max': '256'
+            }),
+            'main_camera': forms.TextInput(attrs={
+                'pattern': r'^(\d+\+)*\d+$',
+            }),
+            'max_video_resolution': forms.TextInput(attrs={
+                'placeholder': 'Напр. 7680 x 4320 або 7680 x 4320 8K UHD',
+                'pattern': r'^\d{3,5}\sx\s\d{3,5}(?:\s[\w\s]{2,15})?$'
+            }),
+            'frontal_camera': forms.TextInput(attrs={
+                'pattern': r'^\d{1,2}(\.\d)$'
+            }),
+            'nfc': forms.CheckboxInput(),
+            'connector_type': forms.TextInput(attrs={
+                'placeholder':'Type-C'
+            }),
+            'battery': forms.NumberInput(attrs={
+                'min': '500',
+                'step': '100',
+                'max': '6500'
+            }),
+            'weight': forms.NumberInput(attrs={
+                'min': '50',
+                'step': '10',
+                'placeholder': '180'
+            })
+        }
+
+    def clean_network_generations(self):
+        # get list of received values
+        selected = self.cleaned_data['network_generations']
+        # combining via comma
+        return ','.join(selected)
+
 
 
 class ProductForm(forms.ModelForm):
