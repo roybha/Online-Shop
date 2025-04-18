@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from myapp.services.db_service import DbService
 from django.contrib.auth import logout, login
 from django.contrib import messages
-from myapp.models import User
+from myapp.models import User, Brand
 from .forms import LaptopForm, ProductForm
 from .models import Category
 
@@ -116,8 +116,38 @@ def add_laptop_product(request):
         # if all entered data pass through validation checking -> save
         if laptop_form.is_valid() and product_form.is_valid():
 
+            # get cpu's brand from laptop form
+            cpu_brand_name = laptop_form.cleaned_data['cpu_brand_name']
+
+            # get gpu's brand from laptop form
+            gpu_brand_name = laptop_form.cleaned_data['gpu_brand_name']
+
+            # get product's brand from product form
+            brand_name = product_form.cleaned_data['brand_name']
+
+            # get value of input field for cpu's brand
+            cpu_brand, _ = Brand.objects.get_or_create(name=cpu_brand_name)
+
+            # get value of input field for gpu's brand
+            gpu_brand, _ = Brand.objects.get_or_create(name=gpu_brand_name)
+
+            # get value of input field for product's brand
+            product_brand, _ = Brand.objects.get_or_create(name=brand_name)
+
+            # save values of laptop's form
+            # but don't commit changes in db
+            laptop = laptop_form.save(commit=False)
+
+            # assign cpu's brand the value of
+            # corresponding input field
+            laptop.cpu_brand = cpu_brand
+
+            # assign gpu's brand the value of
+            # corresponding input field
+            laptop.gpu_brand = gpu_brand
+
             # save laptop instance
-            laptop = laptop_form.save()
+            laptop.save()
 
             # create, but do not save the product object yet
             product = product_form.save(commit=False)
@@ -127,14 +157,22 @@ def add_laptop_product(request):
             product.category_prod_id = laptop.id
 
             # find the category object with
-            # the name "laptop" and bind it to the product
-            product.category = Category.objects.get(name='laptop')
+            # the name "laptop" and bind it to the product if exists
+            # else create such category
+            category, _ = Category.objects.get_or_create(name='laptop')
+
+            # connect product's category id and category's own id
+            product.category_id = category.id
+
+            # assign product's brand the value of
+            # corresponding input field
+            product.brand = product_brand
 
             # store the finished product object in the database
             product.save()
 
-            # successful addition - redirect to login/success page
-            return redirect('sign_in')
+            # successful addition - redirect to default page
+            return redirect('add_laptop_product')
 
     # if the method is GET, we create empty forms to display on the page
     else:
