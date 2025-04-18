@@ -3,7 +3,7 @@ from myapp.services.db_service import DbService
 from django.contrib.auth import logout, login
 from django.contrib import messages
 from myapp.models import User, Brand
-from .forms import LaptopForm, ProductForm
+from .forms import LaptopForm, ProductForm, SmartphoneForm
 from .models import Category
 
 
@@ -185,6 +185,87 @@ def add_laptop_product(request):
         'add_laptop.html',
         {
             'laptop_form': laptop_form,
+            'product_form': product_form
+        }
+    )
+
+def add_smartphone_product(request):
+    """
+    Method for show and also adding a new smartphone to shop by seller
+    :param request: Http request object
+    :return: in case of correct adding redirect to success page
+    else -> show the same page but with text message of exception
+    """
+
+    # if program use POST method
+    # for trying to add new smartphone
+    if request.method == 'POST':
+
+        # get all entered data from forms
+        smartphone_form = SmartphoneForm(request.POST)
+        product_form = ProductForm(request.POST)
+
+        # if all entered data pass through validation checking -> save
+        if smartphone_form.is_valid() and product_form.is_valid():
+
+            # get entered network generations
+            network_generations = smartphone_form.cleaned_data[
+                'network_generations'
+            ]
+
+            # get entered brand name
+            brand_name = product_form.cleaned_data[
+                'brand_name'
+            ]
+
+            # get value of input field for product's brand
+            product_brand, _ = Brand.objects.get_or_create(name=brand_name)
+
+            # save values smartphone's form
+            # but don't commit changes in db
+            smartphone = smartphone_form.save(commit=False)
+
+            # assign smartphone's network generations
+            # value of corresponding input field
+            smartphone.network_generations = network_generations
+
+            # save smartphone in db
+            smartphone.save()
+
+            # create, but do not save the product object yet
+            product = product_form.save(commit=False)
+
+            # connect product's category id and category's own id
+            product.category_prod_id = smartphone.id
+
+            # find the category object with
+            # the name "laptop" and bind it to the product if exists
+            # else create such category
+            category, _ = Category.objects.get_or_create(name='smartphone')
+
+            # connect product's category id and category's own id
+            product.category_id = category.id
+
+            # assign product's brand the value of
+            # corresponding input field
+            product.brand = product_brand
+
+            # store the finished product object in the database
+            product.save()
+
+            # successful addition - redirect to default page
+            return redirect('add_smartphone_product')
+    else:
+        # if the method is GET, we create empty forms to display on the page
+        smartphone_form = SmartphoneForm()
+        product_form = ProductForm()
+
+    # return an HTML page with both forms
+    return render(
+        request,
+        'add_smartphone.html',
+        {
+            'smartphone_form': smartphone_form,
             'product_form': product_form
         }
     )

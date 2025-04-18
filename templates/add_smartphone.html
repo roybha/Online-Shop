@@ -2,20 +2,20 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>Додавання ноутбука</title>
+  <title>Додавання смартфону</title>
 </head>
 <body>
 
-  <h2>Додати ноутбук</h2>
+  <h2>Додати сматрфон</h2>
 
   <form method="post">
     {% csrf_token %}
 
-    <h3>Дані ноутбука</h3>
-    {{ laptop_form.as_p }}
+    <h3>Дані смартфону</h3>
+    {{ smartphone_form.as_p }}
     {{ product_form.as_p }}
 
-    <button type="submit">Додати ноутбук</button>
+    <button type="submit">Додати смартфон</button>
   </form>
 
   {% if messages %}
