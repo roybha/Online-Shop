@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Деталі товару: {{ product.model_name }}</title>
+    <style>
+        .product {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .product img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .specs {
+            margin-top: 20px;
+        }
+
+        .specs p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="product">
+        <h1>{{ product.model_name }}</h1>
+        <img src="{{ product.image_url }}" alt="{{ product.model_name }}">
+        <p><strong>Опис:</strong> {{ product.description }}</p>
+        <p><strong>Ціна:</strong> {{ product.price }} грн</p>
+        <p><strong>Бренд:</strong> {{ product.brand.name }}</p>
+        <p><strong>Категорія:</strong> 
+           {% if product.category.name == 'laptop' %}
+               Ноутбук
+           {% else %}
+               Смартфон
+           {% endif %}
+        </p>
+
+
+        {% if product.category.name|lower == 'laptop' %}
+            <div class="specs">
+                <h2>Характеристики ноутбука</h2>
+                <p><strong>Діагональ:</strong> {{ extra_info.screen_size }} дюймів</p>
+                <p><strong>Роздільна здатність:</strong> {{ extra_info.scree_resolution }}</p>
+                <p><strong>Частота оновлення екрану:</strong> {{ extra_info.screen_ref_rate }} Гц</p>
+                <p><strong>Процесор:</strong> {{ extra_info.cpu_brand.name }} {{ extra_info.cpu_model }}</p>
+                <p><strong>Кількість ядер:</strong> {{ extra_info.cpu_cores_num }}</p>
+                <p><strong>Частота CPU:</strong> {{ extra_info.cpu_frequency }} ГГц</p>
+                <p><strong>Оперативна памʼять:</strong> {{ extra_info.ram }} ГБ ({{ extra_info.ram_type }})</p>
+                <p><strong>Накопичувач:</strong> {{ extra_info.storage }} ГБ ({{ extra_info.storage_type }})</p>
+                <p><strong>Відеокарта:</strong> {{ extra_info.gpu_brand.name }} {{ extra_info.gpu_model }}</p>
+            </div>
+        {% elif product.category.name|lower == 'smartphone' %}
+            <div class="specs">
+                <h2>Характеристики смартфона</h2>
+                <p><strong>Діагональ:</strong> {{ extra_info.screen_size }} дюймів</p>
+                <p><strong>Роздільна здатність:</strong> {{ extra_info.screen_resolution }}</p>
+                <p><strong>Частота оновлення екрану:</strong> {{ extra_info.screen_ref_rate }} Гц</p>
+                <p><strong>SIM-карт:</strong> {{ extra_info.sim_quantity }}</p>
+                <p><strong>Мережа:</strong> {{ extra_info.network_generations }}</p>
+                <p><strong>Процесор:</strong> {{ extra_info.cpu_model }}</p>
+                <p><strong>Кількість ядер:</strong> {{ extra_info.cpu_cores_num }}</p>
+                <p><strong>RAM:</strong> {{ extra_info.ram }} ГБ</p>
+                <p><strong>Памʼять:</strong> {{ extra_info.storage }} ГБ</p>
+                <p><strong>Основна камера:</strong> {{ extra_info.main_camera }}</p>
+                <p><strong>Макс. роздільна здатність відео:</strong> {{ extra_info.max_video_resolution }}</p>
+                <p><strong>Фронтальна камера:</strong> {{ extra_info.frontal_camera }}</p>
+                <p><strong>NFC:</strong> {{ extra_info.nfc|yesno:"Так,Ні" }}</p>
+                <p><strong>Конектор для зарядки:</strong> {{ extra_info.connector_type }}</p>
+                <p><strong>Батарея:</strong> {{ extra_info.battery }} мА·год</p>
+                <p><strong>Вага:</strong> {{ extra_info.weight }} г</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <p style="text-align: center;"><a href="/dashboard">← Назад до головної</a></p>
+
+</body>
+</html>

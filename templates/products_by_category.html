@@ -24,7 +24,11 @@
     {% if products %}
         {% for product in products %}
             <div class="product">
-                <h2>{{ product.model_name }}</h2>
+                <h2>
+                <a href="{% url 'product_detail' product_category=product.category.name product_name=product.model_name %}">
+                   {{ product.model_name }}
+                </a>
+                </h2>
                 <img src="{{ product.image_url }}" alt="{{ product.model_name }}">
                 <p><strong>Опис:</strong> {{ product.description }}</p>
                 <p><strong>Ціна:</strong> {{ product.price }} грн</p>
