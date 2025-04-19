@@ -2,9 +2,8 @@ from django.shortcuts import render, redirect
 from myapp.services.db_service import DbService
 from django.contrib.auth import logout, login
 from django.contrib import messages
-from myapp.models import User, Brand, Product
+from myapp.models import User, Brand, Product, Category, Laptop, Smartphone
 from .forms import LaptopForm, ProductForm, SmartphoneForm
-from .models import Category
 
 
 def sign_up(request):
@@ -300,3 +299,36 @@ def dashboard(request):
     :return: dashboard html page
     """
     return render(request, 'dashboard.html')
+
+def product_detail(request, product_category: str, product_name: str):
+    """
+    Method for showing details of specific product
+    :param request: Http request object
+    :param product_category: str which specify product's category
+    :param product_name: str which specify product's name
+    :return: html page with details of specific product by its category
+    """
+
+    # find category which connected to our product
+    category = Category.objects.get(name=product_category)
+
+    # find specific product which has such category and name
+    product = Product.objects.get(category=category.id, model_name=product_name)
+
+    # variable that will store details of specific product
+    # depending on category
+    extra_info = None
+
+    # if category is laptop -> search in table Laptops
+    if category.name.lower() == 'laptop':
+        extra_info = Laptop.objects.get(id=product.category_prod_id)
+
+    # if category is smartphone -> search in table Smartphones
+    elif category.name.lower() == 'smartphone':
+        extra_info = Smartphone.objects.get(id=product.category_prod_id)
+
+    # return html page with details of specific product
+    return render(request, 'product_detail.html', {
+        'product': product,
+        'extra_info': extra_info,
+    })

@@ -23,4 +23,7 @@ urlpatterns = [
 
     # path for get all products by specific category
     path('products/<str:category_name>/', views.get_all_products_by_category, name='products_by_category'),
+
+    # path for details about specific product by name and category
+    path('product/<str:product_category>/<str:product_name>/', views.product_detail, name='product_detail'),
 ]
