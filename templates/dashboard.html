@@ -22,7 +22,7 @@
             <li><a href="products/smartphone">Продивитись наянві смартфони</a></li>
             <li><a href="products/laptop">Продивитись наянві ноутбуки</a></li>
             <li><a href="{% url 'show_cart' %}">Переглянути корзину</a></li>
-            <li>Мої замовлення</li>
+            <li><a href="{% url 'list_user_orders' %}">Мої замовлення</a></li>
         </ul>
     {% endif %}
 

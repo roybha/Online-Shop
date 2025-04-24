@@ -51,16 +51,24 @@ urlpatterns = [
          name='product_detail'
     ),
 
+    # path for adding products to the current cart
     path('cart/add/<int:product_id>',
          views.add_to_cart,
          name='add_to_cart'),
 
+    # path for show current cart
     path('cart/show',
          views.show_cart,
          name='show_cart'),
 
+    # path for confirming specific order
     path('cart/confirm/',
          views.confirm_order,
          name='confirm_order'
     ),
+
+    # path for orders check by some buyer
+    path('orders/list',
+         views.list_user_orders,
+         name='list_user_orders'),
 ]

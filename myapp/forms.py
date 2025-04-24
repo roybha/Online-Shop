@@ -1,4 +1,6 @@
 # forms.py
+from cProfile import label
+
 from django import forms
 from .models import Laptop, Product, Smartphone
 
@@ -49,7 +51,7 @@ class LaptopForm(forms.ModelForm):
                 'max': '240'
             }),
             'cpu_model': forms.TextInput(attrs={
-                'placeholder': 'Ryzen 5 5600H'
+                'placeholder': '5600H'
             }),
             'cpu_cores_num': forms.NumberInput(attrs={
                 'min': '2',
@@ -135,11 +137,8 @@ class SmartphoneForm(forms.ModelForm):
                 'step': '1',
                 'max': '3'
             }),
-            'network_generations': forms.TextInput(attrs={
-                'placeholder': 'Введіть типи зв’язку через кому, напр. 2G,3G,4G,5G'
-            }),
             'cpu_model': forms.TextInput(attrs={
-                'placeholder': 'Exynos 2400e',
+                'placeholder': '2400e',
             }),
             'cpu_cores_num': forms.NumberInput(attrs={
                 'min': '4',
@@ -153,7 +152,7 @@ class SmartphoneForm(forms.ModelForm):
             }),
             'storage': forms.NumberInput(attrs={
                 'min': '64',
-                'step': '10',
+                'step': '1',
                 'max': '256'
             }),
             'main_camera': forms.TextInput(attrs={
@@ -164,7 +163,9 @@ class SmartphoneForm(forms.ModelForm):
                 'pattern': r'^\d{3,5}\sx\s\d{3,5}(?:\s[\w\s]{2,15})?$'
             }),
             'frontal_camera': forms.TextInput(attrs={
-                'pattern': r'^\d{1,2}(\.\d)$'
+                'placeholder': 'Наприклад, 8',
+                'pattern': r'^\d+$',
+                'title': 'Введіть фронтальну камеру як ціле число',
             }),
             'nfc': forms.CheckboxInput(),
             'connector_type': forms.TextInput(attrs={
@@ -218,7 +219,7 @@ class ProductForm(forms.ModelForm):
         # setting input format for some fields
         widgets = {
             'model_name': forms.TextInput(attrs={
-                'placeholder': 'Acer Nitro 5',
+                'placeholder': 'Nitro S5',
                 'maxlength': '30'
             }),
             'description': forms.Textarea(attrs={
