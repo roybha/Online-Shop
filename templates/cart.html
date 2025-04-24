@@ -26,6 +26,16 @@
     <p>Загальна сума: {{ total_price }} ₴</p>
     <button type="submit">Оформити замовлення</button>
   </form>
+
+  <hr> <!-- Додаємо роздільник між формами -->
+
+  <!-- Окрема форма для видалення товарів з кошика -->
+  {% for item in cart_items %}
+    <form method="post" action="{% url 'remove_from_cart' product_id=item.product.id %}">
+      {% csrf_token %}
+      <button type="submit" class="remove-item-button">Видалити</button>
+    </form>
+  {% endfor %}
   
   {% if messages %}
     <ul>
@@ -41,4 +51,11 @@
   <p>Ваш кошик порожній.</p>
   <a href="{% url 'dashboard' %}">Повернутись на головну</a>
 {% endif %}
+{% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 
