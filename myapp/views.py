@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from myapp.services.db_service import DbService
 from django.contrib.auth import logout, login
 from django.contrib import messages
-from myapp.models import User, Brand, Product, Category, Laptop, Smartphone
+from myapp.models import (User, Brand, Product, Category,
+                          Laptop, Smartphone, Order, OrderItem)
 from .forms import LaptopForm, ProductForm, SmartphoneForm
 
 
@@ -37,8 +38,11 @@ def sign_up(request):
                 f"Користувача {new_user.email} успішно зареєстровано!"
             )
 
-            # return sign_in html form
-            return render(request, 'sign_in.html')
+            # check if 'next' parameter is in the request
+            maybe_next = request.POST.get('next', None)  # None if no 'next'
+            url = '/sign-in' if maybe_next is None else f'/sign-in?next={maybe_next}'
+            # return sign_in html form with/without 'next' parameter
+            return redirect(url)
         else:
             # handle registration failure
             messages.info(request, "Помилка авторизації")
@@ -73,7 +77,9 @@ def sign_in(request):
         if user is not None:
             login(request, user)
             request.session.save()
-            return redirect('dashboard')
+            # Get the next parameter if it exists
+            next_url = request.POST.get('next', 'dashboard')
+            return redirect(next_url)
         else:
 
             # if authentication failed,
@@ -332,3 +338,186 @@ def product_detail(request, product_category: str, product_name: str):
         'product': product,
         'extra_info': extra_info,
     })
+def add_to_cart(request, product_id):
+    """
+    Method for adding product to cart
+    :param request: Http request object
+    :param product_id: specific product id
+    that will be added to the cart
+    :return: current cart
+    """
+    # get the current cart from the session
+    # or create an empty one if it doesn't already exist
+    cart = request.session.get('cart', {})
+
+    # if the product is already in the cart
+    if str(product_id) in cart:
+
+        # increase its quantity by 1
+        cart[str(product_id)] += 1
+    else:
+
+        # otherwise add it with a quantity of 1
+        cart[str(product_id)] = 1
+
+    # save the updated cart in the session
+    request.session['cart'] = cart
+
+    # redirect the user to the page
+    # where adding has been called
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+
+
+def show_cart(request):
+    """
+    Method for showing cart's items
+    :param request: Http request object
+    :return: html page with cart's items
+    """
+    # get the cart from the session (keys are string IDs of products)
+    cart = request.session.get('cart', {})
+
+    # we select all the products in the cart
+    products = Product.objects.filter(id__in=cart.keys())
+    cart_items = []
+
+    # form a list of cart items for display
+    for product in products:
+        cart_items.append({
+            'product': product,
+            'quantity': cart[str(product.id)],  # quantity from session
+            'total': product.price * cart[str(product.id)]  # common price of product
+        })
+
+    # calculating common price of potential order
+    total_price = sum(item['total'] for item in cart_items)
+
+    # render cart html page with its items
+    return render(request, 'cart.html', {
+        'cart_items': cart_items,
+        'total_price': total_price
+    })
+
+def get_order_user(request):
+    """
+    Method that returns the user,
+    or None with an error if the guest email is invalid
+    :param request: Http request object
+    :return: user if authenticated
+    or redirect to sign_in page
+    """
+
+    # if user is authenticated
+    if request.user.is_authenticated:
+
+        # get him from request attribute
+        return request.user
+
+    # return None otherwise
+    return None
+
+def parse_cart_from_post(post_data):
+    """
+    Method for parsing the cart from post data.
+    :param post_data: POST data containing product information
+    :return: a dictionary representing the cart with product ids and quantities
+    """
+
+    # create a variable that will
+    # represent user's cart
+    new_cart = {}
+
+    # parsing products from the post data
+    for key, val in post_data.items():
+
+        # skip keys that do not start with 'product_'
+        if not key.startswith('product_'):
+            continue
+
+        # extract product id from the key (e.g. 'product_1' → '1')
+        prod_id = key.split('_', 1)[1]
+        try:
+
+            # try to convert the value to an integer (quantity)
+            qty = int(val)
+        except (ValueError, TypeError):
+
+            # skip the product if the quantity is not valid
+            continue
+
+        # add product to the cart if the quantity is greater than 0
+        if qty > 0:
+            new_cart[prod_id] = qty
+
+    # return the parsed cart dictionary
+    return new_cart
+
+def create_order(user, cart):
+    """
+    Method for creating order and its items
+    :param user: user that making an order
+    :param cart: cart that consist of different products
+    :return: created order with its items
+    """
+
+    #  create new order record into db
+    order = Order.objects.create(user=user, price=0)
+
+    # set initial total price
+    total = 0
+
+    # calculating total price by using quantity
+    for prod_id, quantity in cart.items():
+        product = Product.objects.get(id=prod_id)
+        OrderItem.objects.create(order=order, product=product, quantity=quantity)
+        total += product.price * quantity
+
+    # set price of order after calculations
+    order.price = total
+
+    # save new order into db
+    order.save()
+
+    # return created order
+    return order
+
+def confirm_order(request):
+    """
+    Method for confirming order by clients
+    :param request: Http request object
+    :return: redirect to dashboard or show_cart
+    """
+
+    # if the request method is not POST, redirect to the show_cart page
+    if request.method != 'POST':
+        return redirect('show_cart')
+
+    # 1) get the user of order
+    user = get_order_user(request)
+
+    # if user is not authenticated, redirect to sign-in page with the referer
+    if not user:
+        referer = '/cart/show'
+
+        # here, we are redirecting to 'sign_in' with the `next` parameter
+        return redirect(f'/sign-in?next={referer}')
+
+    # 2) read and validate the new cart
+    new_cart = parse_cart_from_post(request.POST)
+
+    # if the cart is empty, show an error and return to show_cart
+    if not new_cart:
+        messages.error(request, 'Корзина порожня.')
+        return redirect('show_cart')
+
+    # save the updated cart to the session
+    request.session['cart'] = new_cart
+
+    # 3) create the order using the user and cart data
+    create_order(user, new_cart)
+
+    # 4) clear the cart in the session and redirect to the dashboard
+    request.session['cart'] = {}
+    return redirect('dashboard')

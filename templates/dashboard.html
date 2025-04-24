@@ -21,9 +21,8 @@
         <ul>
             <li><a href="products/smartphone">Продивитись наянві смартфони</a></li>
             <li><a href="products/laptop">Продивитись наянві ноутбуки</a></li>
-            <li>Замовити товар</li>
+            <li><a href="{% url 'show_cart' %}">Переглянути корзину</a></li>
             <li>Мої замовлення</li>
-            <li>Оформити замовлення</li>
         </ul>
     {% endif %}
 
@@ -32,8 +31,7 @@
     <ul>
         <li><a href="products/smartphone">Продивитись наянві смартфони</a></li>
         <li><a href="products/laptop">Продивитись наянві ноутбуки</a></li>
-        <li>Замовити товар</li>
-        <li>Оформити замовлення</li>
+        <li><a href="{% url 'show_cart' %}">Переглянути корзину</a></li>
     </ul>
 {% endif %}
 
