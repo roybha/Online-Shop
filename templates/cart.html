@@ -1,13 +1,14 @@
-<form method="post" action="{% url 'confirm_order' %}">
+{% if cart_items %}
+  <form method="post" action="{% url 'confirm_order' %}">
     {% csrf_token %}
     
     <table>
-    {% for item in cart_items %}
-    <tr>
-        <td>{{ item.product.model_name }}</td>
-        <td>
+      {% for item in cart_items %}
+        <tr>
+          <td>{{ item.product.model_name }}</td>
+          <td>
             <label for="product_{{ item.product.id }}" class="visually-hidden">
-                Кількість {{ item.product.model_name }}
+              Кількість
             </label>
             <input type="number"
                    id="product_{{ item.product.id }}"
@@ -16,19 +17,28 @@
                    min="1"
                    max="10"
             >
-        </td>
-        <td>{{ item.total }}</td>
-    </tr>
-    {% endfor %}
+          </td>
+          <td>{{ item.total }}</td>
+        </tr>
+      {% endfor %}
     </table>
     
-    <p>Загальна сума: {{ total_price }}</p>
+    <p>Загальна сума: {{ total_price }} ₴</p>
     <button type="submit">Оформити замовлення</button>
-</form>
-{% if messages %}
+  </form>
+  
+  {% if messages %}
     <ul>
       {% for message in messages %}
         <li>{{ message }}</li>
       {% endfor %}
     </ul>
+  {% endif %}
+  
+  <a href="{% url 'dashboard' %}">Повернутись на головну</a>
+
+{% else %}
+  <p>Ваш кошик порожній.</p>
+  <a href="{% url 'dashboard' %}">Повернутись на головну</a>
 {% endif %}
+

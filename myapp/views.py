@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from myapp.services.db_service import DbService
 from django.contrib.auth import logout, login
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from myapp.models import (User, Brand, Product, Category,
                           Laptop, Smartphone, Order, OrderItem)
@@ -172,6 +173,9 @@ def add_laptop_product(request):
             # corresponding input field
             product.brand = product_brand
 
+            # set custom model name
+            product.model_name = f'Ноутбук {product_brand.name} {product_form.cleaned_data.get('model_name')}'
+
             # store the finished product object in the database
             product.save()
 
@@ -253,6 +257,9 @@ def add_smartphone_product(request):
             # assign product's brand the value of
             # corresponding input field
             product.brand = product_brand
+
+            # set custom model name
+            product.model_name = f'Смартфон {product_brand.name} {product_form.cleaned_data.get('model_name')}'
 
             # store the finished product object in the database
             product.save()
@@ -338,6 +345,7 @@ def product_detail(request, product_category: str, product_name: str):
         'product': product,
         'extra_info': extra_info,
     })
+
 def add_to_cart(request, product_id):
     """
     Method for adding product to cart
@@ -521,3 +529,33 @@ def confirm_order(request):
     # 4) clear the cart in the session and redirect to the dashboard
     request.session['cart'] = {}
     return redirect('dashboard')
+
+@login_required
+def list_user_orders(request):
+    """
+    Method that returns all orders of current user
+    :param request: Http request object
+    :return: html-page with list of orders
+    """
+
+    # get current user from request attribute
+    user = request.user
+
+    # get all user's orders sorted by date
+    orders = Order.objects.filter(user=user).order_by('order_date')
+
+    # add to every order its items from OrderItem's table
+    orders_with_items = []
+    for order in orders:
+        items = OrderItem.objects.filter(order_id=order.id).select_related('product')
+        total_price = sum(item.product.price * item.quantity for item in items)
+        orders_with_items.append({
+            'order': order,
+            'items': items,
+            'total_price': total_price,
+        })
+
+    # return html page with collected orders
+    return render(request, 'orders.html', {
+        'orders_with_items': orders_with_items,
+    })
