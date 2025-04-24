@@ -408,6 +408,30 @@ def show_cart(request):
         'total_price': total_price
     })
 
+def remove_from_cart(request, product_id):
+    """
+    Method for removing a product from the cart.
+    :param request: Http request object
+    :param product_id: id of the specific product to remove
+    :return: redirect to the updated cart page
+    """
+    # get the current cart from the session (cart is a dictionary where keys are product IDs)
+    cart = request.session.get('cart', {})
+
+    # check if the product exists in the cart
+    if str(product_id) in cart:
+        # delete the product from the cart
+        del cart[str(product_id)]
+        # save the updated cart to the session
+        request.session['cart'] = cart
+        messages.success(request, 'Товар успішно видалено з кошика.')
+    else:
+        # if the product is not in the cart
+        messages.error(request, 'Товар не знайдено в кошику.')
+
+    # redirect to the cart page to show the updated cart
+    return redirect('show_cart')
+
 def get_order_user(request):
     """
     Method that returns the user,
@@ -559,3 +583,15 @@ def list_user_orders(request):
     return render(request, 'orders.html', {
         'orders_with_items': orders_with_items,
     })
+
+@login_required
+def delete_order(request, order_id):
+    order = Order.objects.get(id=order_id)
+    if request.user != order.user:
+        messages.error(request,'Ви не маєте прпво видалити це замовлення')
+        return redirect('list_user_orders')
+    else:
+        order_items = OrderItem.objects.filter(order_id=order_id)
+        order_items.delete()
+        order.delete()
+        return redirect('list_user_orders')

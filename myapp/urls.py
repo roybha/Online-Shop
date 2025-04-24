@@ -71,4 +71,14 @@ urlpatterns = [
     path('orders/list',
          views.list_user_orders,
          name='list_user_orders'),
+
+    # path for deleting order
+    path('orders/delete/<int:order_id>',
+         views.delete_order,
+         name='delete_order'),
+
+    # path for deleting from cart
+    path('cart/delete/<int:product_id>/',
+         views.remove_from_cart,
+         name='remove_from_cart'),
 ]
