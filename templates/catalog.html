@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Каталог</title>
+</head>
+<body>
+<form method="get">
+ <h3>Пошук</h3>
+  <input type="text" name="q" value="{{ search_query|default_if_none:'' }}" placeholder="Введіть назву товару"><br>
+  <h3>Категорія</h3>
+  <select name="category">
+    <option value="">Усі категорії</option>
+    {% for cat in categories %}
+      <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_category_id %}selected{% endif %}>{{ cat.name }}</option>
+    {% endfor %}
+  </select><br>
+
+  <h3>Бренди</h3>
+  {% for brand in brands %}
+    <label>
+      <input type="checkbox" name="brand" value="{{ brand }}" {% if brand in selected_brands %}checked{% endif %}>
+      {{ brand }}
+    </label><br>
+  {% endfor %}
+
+  <h3>Ціна</h3>
+<input type="range" name="price"
+       min="{{ min_price }}"
+       max="{{ max_price }}"
+       value="{{ selected_price|default_if_none:max_price }}"
+       oninput="document.getElementById('price_val').innerText=this.value">
+<span id="price_val">{{ selected_price|default_if_none:max_price }}</span><br>
+
+
+  <button type="submit">Фільтрувати</button>
+</form>
+
+<h2>{% if category %}Категорія: {{ category.name }}{% else %}Популярні товари{% endif %}</h2>
+
+<div class="products">
+  {% for product in products %}
+    <div class="product-card">
+      <img src="{{ product.image_url }}" alt="{{ product.name }}">
+      <h4>{{ product.name }}</h4>
+      <p>{{ product.brand }}</p>
+      <p>{{ product.price }}</p>
+      <button>Add to Cart</button>
+    </div>
+  {% endfor %}
+</div>
+</body>
+</html>

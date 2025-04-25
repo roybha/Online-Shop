@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from myapp.models import (User, Brand, Product, Category,
                           Laptop, Smartphone, Order, OrderItem)
+from django.db.models import Min, Max
 from .forms import LaptopForm, ProductForm, SmartphoneForm
 
 
@@ -586,12 +587,104 @@ def list_user_orders(request):
 
 @login_required
 def delete_order(request, order_id):
+    """
+    Method for deleting an order
+    :param request: Http request object
+    :param order_id: specified order's id
+    :return: updated list of orders of specified user
+    """
+
+    # search in Order table order
+    # with this id
     order = Order.objects.get(id=order_id)
+
+    # if order's creator isn't this user
+    # -> return the same page with error message
     if request.user != order.user:
         messages.error(request,'Ви не маєте прпво видалити це замовлення')
-        return redirect('list_user_orders')
     else:
+        # if order's creator is this user
+        # -> delete order, its items
         order_items = OrderItem.objects.filter(order_id=order_id)
         order_items.delete()
         order.delete()
-        return redirect('list_user_orders')
+
+    # redirect to the page of user's orders
+    return redirect('list_user_orders')
+
+def catalog(request):
+    """
+    Method for show catalog of products
+    :param request: Http request object
+    :return: html-page with list of products
+    with potential filters
+    """
+
+    # find all products into db
+    products = Product.objects.all()
+
+    # get all filters by GET-params
+    brand_filter = request.GET.getlist('brand')
+    price_max = request.GET.get('price')
+    selected_category_id = request.GET.get('category')
+    search_query = request.GET.get('q')
+
+    # filtration by brand
+    if brand_filter:
+        products = products.filter(brand__name__in=brand_filter)
+
+    # filtration by max price
+    if price_max:
+        products = products.filter(price__lte=price_max)
+
+    # filtration by category
+    # default -> None
+    category = None
+    if selected_category_id:
+        products = products.filter(category__id=selected_category_id)
+        try:
+            category = Category.objects.get(id=selected_category_id)
+        except Category.DoesNotExist:
+            category = None
+
+    # filtration by search query
+    if search_query:
+        products = products.filter(model_name__icontains=search_query)
+
+    # setting(updating) min and max price
+    price_stats = Product.objects.aggregate(min_price=Min('price'), max_price=Max('price'))
+    min_price = price_stats['min_price'] or 0
+    max_price = price_stats['max_price'] or 100000
+
+    # filtration by selected price
+    selected_price = request.GET.get('price')
+    if selected_price:
+        products = products.filter(price__lte=selected_price)
+
+    # set all data into html-variables
+    context = {
+        'products': products,
+        'brands': Product.objects.values_list('brand__name', flat=True).distinct(),
+        'categories': formatted_categories(),
+        'selected_brands': brand_filter,
+        'selected_price': selected_price,
+        'selected_category_id': selected_category_id,
+        'category': category,
+        'search_query': search_query,
+        'min_price': min_price,
+        'max_price': max_price,
+    }
+
+    # return html-catalog page
+    return render(request, 'catalog.html', context)
+
+def formatted_categories():
+    """
+    Method that returns a list of all available categories
+    :return: str list of all available categories
+    """
+    formatted_categories = []
+    for cat in Category.objects.all():
+        formatted_name = 'Ноутбуки' if cat.name == 'laptop' else 'Смартфони' if cat.name == 'smartphone' else cat.name.title()
+        formatted_categories.append({'id': cat.id, 'name': formatted_name})
+    return formatted_categories
