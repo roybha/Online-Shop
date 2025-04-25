@@ -81,4 +81,9 @@ urlpatterns = [
     path('cart/delete/<int:product_id>/',
          views.remove_from_cart,
          name='remove_from_cart'),
+
+    # path for catalog of products
+    path('catalog',
+         views.catalog,
+         name='catalog'),
 ]

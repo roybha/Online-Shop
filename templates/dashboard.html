@@ -19,6 +19,7 @@
     {% else %}
         <h2>Меню покупця</h2>
         <ul>
+            <li><a href="{% url 'catalog' %}">Каталог</a></li>
             <li><a href="products/smartphone">Продивитись наянві смартфони</a></li>
             <li><a href="products/laptop">Продивитись наянві ноутбуки</a></li>
             <li><a href="{% url 'show_cart' %}">Переглянути корзину</a></li>
@@ -29,6 +30,7 @@
 {% else %}
     <h2>Меню покупця</h2>
     <ul>
+        <li><a href="{% url 'catalog' %}">Каталог</a></li>
         <li><a href="products/smartphone">Продивитись наянві смартфони</a></li>
         <li><a href="products/laptop">Продивитись наянві ноутбуки</a></li>
         <li><a href="{% url 'show_cart' %}">Переглянути корзину</a></li>
