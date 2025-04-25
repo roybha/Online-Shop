@@ -14,7 +14,7 @@
         <ul>
             <li><a href="{% url 'add_laptop_product' %}">Додати ноутбук</a></li>
             <li><a href="{% url 'add_smartphone_product' %}">Додати смартфон</a></li>
-            <li>Обробити замовлення</li>
+            <li><a href="{% url 'show_unconfirmed_orders' %}">Обробити замовлення</a></li>
         </ul>
     {% else %}
         <h2>Меню покупця</h2>

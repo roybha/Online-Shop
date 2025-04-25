@@ -688,3 +688,54 @@ def formatted_categories():
         formatted_name = 'Ноутбуки' if cat.name == 'laptop' else 'Смартфони' if cat.name == 'smartphone' else cat.name.title()
         formatted_categories.append({'id': cat.id, 'name': formatted_name})
     return formatted_categories
+
+@login_required
+def show_unconfirmed_orders(request):
+    """
+    Method that show confirmed orders for seller
+    :param request: Http request object
+    :return: html-page with non-ocnfirmed orders
+    """
+
+    # check user's role
+    user: User = request.user
+    if user.role == 'seller':
+
+        # collect unconfirmed orders sorted by date
+        unconfirmed_orders = Order.objects.filter(status=False).order_by('-order_date')
+        return render(request, 'seller_orders.html', {'orders': unconfirmed_orders})
+    else:
+
+        # return message with error
+        messages.error(request, 'У вас немає доступу до цієї сторінки.')
+        return redirect('dashboard')
+
+
+@login_required
+def status_change(request, order_id):
+    """
+    Method that change status of order
+    with specified id
+    :param request: Http request object
+    :param order_id: specified order's id
+    :return: updated html-page with list of orders
+    """
+    user: User = request.user
+    if request.method == 'POST':
+        order = Order.objects.get(id=order_id)
+        if user.role == 'seller':
+            if order.status:
+                messages.info(request, 'Це замовлення вже підтверджено.')
+            else:
+
+                # if order's status is False
+                # -> change it
+                order.status = True
+                order.save()
+                messages.success(request, f'Замовлення №{order.id} підтверджено.')
+        else:
+            messages.error(request, 'У вас немає прав для підтвердження замовлень.')
+
+    return redirect('show_unconfirmed_orders')  # повертаємося назад до списку
+
+

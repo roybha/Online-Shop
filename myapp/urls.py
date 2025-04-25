@@ -86,4 +86,14 @@ urlpatterns = [
     path('catalog',
          views.catalog,
          name='catalog'),
+
+    # path for all unconfirmed orders page
+    path('orders/status/',
+         views.show_unconfirmed_orders,
+         name='show_unconfirmed_orders'),
+
+    # path for changing specified order's status
+    path('orders/status/<int:order_id>/',
+         views.status_change,
+         name='status_change'),
 ]
