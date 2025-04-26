@@ -36,12 +36,12 @@
           <h1 class="h3 mb-3 fw-normal">Вхід</h1>
       
           <div class="form-floating mb-2">
-            <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com">
+            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
             <label for="floatingInput">Email адреса</label>
           </div>
             
           <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
             <label for="floatingPassword">Пароль</label>
             <button type="button" class="btn eye btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" 
                 onclick="togglePassword()" 
@@ -55,14 +55,13 @@
             
           <button class="btn btn-primary w-100 py-2 mt-5" type="submit">Увійти</button>
             
-          <a href="/sign-up{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" 
-             class="btn btn-secondary w-100 py-2 mt-3">
+          <button href="/sign-up{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" 
+                  class="btn btn-secondary w-100 py-2 mt-3" type="submit">
               Зареєструватися
-          </a>
-
+          </button>
             
           <div class="back-anchor mt-5">
-            <a href="/">Повернутися до Каталогу</a>
+            <a href="">Повернутися до Каталогу</a>
           </div>
             
         {% if messages %}
@@ -88,5 +87,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     </body>
 </html>
-
-

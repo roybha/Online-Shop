@@ -83,7 +83,7 @@ urlpatterns = [
          name='remove_from_cart'),
 
     # path for catalog of products
-    path('catalog',
+    path('',
          views.catalog,
          name='catalog'),
 
