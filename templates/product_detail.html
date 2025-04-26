@@ -78,8 +78,12 @@
             </div>
         {% endif %}
     </div>
-
-    <p style="text-align: center;"><a href="/dashboard">← Назад до головної</a></p>
+    <form method="post" action="{% url 'add_to_cart' product_id=product.id%}">
+        {% csrf_token %}
+         <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button type="submit">Додати до кошика</button>
+    </form>
+   <a href="/dashboard">Повернутись на головну</a>
 
 </body>
 </html>

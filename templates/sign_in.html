@@ -16,10 +16,12 @@
 
     <label for="password">Пароль:</label><br>
     <input type="password" name="password" id="password"><br><br>
-
+ {% if request.GET.next %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+    {% endif %}
     <button type="submit">Увійти</button>
   </form>
-
+<a href="/sign-up{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">Зареєструватися</a>
   {% if messages %}
     <ul>
       {% for message in messages %}

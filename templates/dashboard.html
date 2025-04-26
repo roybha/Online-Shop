@@ -14,26 +14,26 @@
         <ul>
             <li><a href="{% url 'add_laptop_product' %}">Додати ноутбук</a></li>
             <li><a href="{% url 'add_smartphone_product' %}">Додати смартфон</a></li>
-            <li>Обробити замовлення</li>
+            <li><a href="{% url 'show_unconfirmed_orders' %}">Обробити замовлення</a></li>
         </ul>
     {% else %}
         <h2>Меню покупця</h2>
         <ul>
+            <li><a href="{% url 'catalog' %}">Каталог</a></li>
             <li><a href="products/smartphone">Продивитись наянві смартфони</a></li>
             <li><a href="products/laptop">Продивитись наянві ноутбуки</a></li>
-            <li>Замовити товар</li>
-            <li>Мої замовлення</li>
-            <li>Оформити замовлення</li>
+            <li><a href="{% url 'show_cart' %}">Переглянути корзину</a></li>
+            <li><a href="{% url 'list_user_orders' %}">Мої замовлення</a></li>
         </ul>
     {% endif %}
 
 {% else %}
     <h2>Меню покупця</h2>
     <ul>
+        <li><a href="{% url 'catalog' %}">Каталог</a></li>
         <li><a href="products/smartphone">Продивитись наянві смартфони</a></li>
         <li><a href="products/laptop">Продивитись наянві ноутбуки</a></li>
-        <li>Замовити товар</li>
-        <li>Оформити замовлення</li>
+        <li><a href="{% url 'show_cart' %}">Переглянути корзину</a></li>
     </ul>
 {% endif %}
 

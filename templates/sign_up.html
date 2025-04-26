@@ -20,9 +20,12 @@
     <label for="password_confirm">Підтвердження паролю:</label><br>
     <input type="password" name="password_confirm" id="password_confirm" required><br><br>
 
+      {% if request.GET.next %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+    {% endif %}
     <button type="submit">Зареєструватися</button>
   </form>
-
+<a href="/sign_in{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">Увійти</a>
   {% if messages %}
     <ul>
       {% for message in messages %}

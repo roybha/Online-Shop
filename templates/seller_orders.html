@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Непідтверджені замовлення</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #eee;
+    }
+    .confirm-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      cursor: pointer;
+    }
+    .confirm-btn:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h1>Непідтверджені замовлення</h1>
+
+  {% if orders %}
+    <table>
+      <thead>
+        <tr>
+          <th>Номер</th>
+          <th>Дата</th>
+          <th>Клієнт</th>
+          <th>Статус</th>
+          <th>Дія</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.order_date|date:"d.m.Y" }}</td>
+            <td>{{ order.user.username }}</td>
+            <td><span style="color: red;">В обробці</span></td>
+            <td>
+              <form action="{% url 'status_change' order.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="confirm-btn">Підтвердити</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Немає замовлень, які потребують підтвердження.</p>
+  {% endif %}
+
+  <a href="{% url 'dashboard' %}">← Назад на головну</a>
+</body>
+</html>
