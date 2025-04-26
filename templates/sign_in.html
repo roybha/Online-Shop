@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вхід</title>
     <link rel="stylesheet" href="{% static 'myapp/css/gradient.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
         form {
             width: 400px;
@@ -29,64 +30,65 @@
     </style>
 </head>
 <body class="text-center">
-    <main class="form-signin w-100 m-auto gradient-background">
-        <form method="post" action="/sign-in">
-            {% csrf_token %}
-            
-          <h1 class="h3 mb-3 fw-normal">Вхід</h1>
-      
-          <div class="form-floating mb-2">
+<main class="form-signin w-100 m-auto gradient-background">
+    <form method="post" action="/sign-in">
+        {% csrf_token %}
+
+        <h1 class="h3 mb-3 fw-normal">Вхід</h1>
+
+        <div class="form-floating mb-2">
             <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com">
             <label for="floatingInput">Email адреса</label>
-          </div>
-            
-          <div class="form-floating">
-            <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password">
-            <label for="floatingPassword">Пароль</label>
-            <button type="button" class="btn eye btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2" 
-                onclick="togglePassword()" 
-                style="border: none; background: transparent;">
-                👁️
-                </button>
-          </div>
-          {% if request.GET.next %}
-              <input type="hidden" name="next" value="{{ request.GET.next }}">
-          {% endif %}
-            
-          <button class="btn btn-primary w-100 py-2 mt-5" type="submit">Увійти</button>
-            
-          <a href="/sign-up{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" 
-             class="btn btn-secondary w-100 py-2 mt-3">
-              Зареєструватися
-          </a>
+        </div>
 
-            
-          <div class="back-anchor mt-5">
-            <a href="/">Повернутися до Каталогу</a>
-          </div>
-            
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="password"
+                   required>
+            <label for="floatingPassword">Пароль</label>
+            <button type="button"
+                    class="btn eye btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2"
+                    onclick="togglePassword()"
+                    style="border: none; background: transparent;">
+                👁️
+            </button>
+        </div>
+        {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
         {% endif %}
-            
-        </form>
-      </main>
-      <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById("floatingPassword");
-            if (passwordInput.type === "password" && passwordInput.value.trim() !== "") {
-                passwordInput.type = "text";
-            } else {
-                passwordInput.type = "password";
-            }
+
+        <button class="btn btn-primary w-100 py-2 mt-5" type="submit">Увійти</button>
+
+        <a href="/sign-up{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}"
+           class="btn btn-secondary w-100 py-2 mt-3">
+            Зареєструватися
+        </a>
+
+        <div class="back-anchor mt-5">
+            <a href="/">Повернутися до Каталогу</a>
+        </div>
+
+        {% for message in messages %}
+            <div class="alert alert-warning mt-1" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+    </form>
+</main>
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById("floatingPassword");
+        if (passwordInput.type === "password" && passwordInput.value.trim() !== "") {
+            passwordInput.type = "text";
+        } else {
+            passwordInput.type = "password";
         }
-      </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
-    </body>
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+        crossorigin="anonymous"></script>
+</body>
 </html>
 
 

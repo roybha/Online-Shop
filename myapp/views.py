@@ -10,7 +10,6 @@ from .forms import LaptopForm, ProductForm, SmartphoneForm
 
 
 def sign_up(request):
-
     """
     Method to sign up a new user
     :param request: Http request object
@@ -30,11 +29,11 @@ def sign_up(request):
             messages.error(request, 'Passwords must match')
             return render(request, 'sign_up.html')
 
-        # try to register the new user using the DbService
-        new_user = DbService.sign_up(email=email, password=password)
+        try:
+            # try to register the new user using the DbService
+            new_user = DbService.sign_up(email=email, password=password)
 
-        # if a valid User object is returned, registration is successful
-        if isinstance(new_user, User):
+            # if a valid User object is returned, registration is successful
             messages.info(
                 request,
                 f"Користувача {new_user.email} успішно зареєстровано!"
@@ -45,12 +44,14 @@ def sign_up(request):
             url = '/sign-in' if maybe_next is None else f'/sign-in?next={maybe_next}'
             # return sign_in html form with/without 'next' parameter
             return redirect(url)
-        else:
+
+        except Exception as e:
             # handle registration failure
-            messages.info(request, "Помилка авторизації")
+            messages.info(request, e.message)
 
             # return sign_up html form
             return render(request, 'sign_up.html')
+
     else:
 
         # if not a POST request or required fields are missing,
@@ -122,7 +123,6 @@ def add_laptop_product(request):
 
         # if all entered data pass through validation checking -> save
         if laptop_form.is_valid() and product_form.is_valid():
-
             # get cpu's brand from laptop form
             cpu_brand_name = laptop_form.cleaned_data['cpu_brand_name']
 
@@ -198,6 +198,7 @@ def add_laptop_product(request):
         }
     )
 
+
 def add_smartphone_product(request):
     """
     Method for show and also adding a new smartphone to shop by seller
@@ -216,7 +217,6 @@ def add_smartphone_product(request):
 
         # if all entered data pass through validation checking -> save
         if smartphone_form.is_valid() and product_form.is_valid():
-
             # get entered network generations
             network_generations = smartphone_form.cleaned_data[
                 'network_generations'
@@ -282,6 +282,7 @@ def add_smartphone_product(request):
         }
     )
 
+
 def get_all_products_by_category(request, category_name: str):
     """
     Method for getting all products by  specific category
@@ -301,10 +302,11 @@ def get_all_products_by_category(request, category_name: str):
     return render(request,
                   'products_by_category.html',
                   {
-                   'products': products,
-                   'category_name': category_for_view
-                   }
-    )
+                      'products': products,
+                      'category_name': category_for_view
+                  }
+                  )
+
 
 def dashboard(request):
     """
@@ -313,6 +315,7 @@ def dashboard(request):
     :return: dashboard html page
     """
     return render(request, 'dashboard.html')
+
 
 def product_detail(request, product_category: str, product_name: str):
     """
@@ -346,6 +349,7 @@ def product_detail(request, product_category: str, product_name: str):
         'product': product,
         'extra_info': extra_info,
     })
+
 
 def add_to_cart(request, product_id):
     """
@@ -409,6 +413,7 @@ def show_cart(request):
         'total_price': total_price
     })
 
+
 def remove_from_cart(request, product_id):
     """
     Method for removing a product from the cart.
@@ -433,6 +438,7 @@ def remove_from_cart(request, product_id):
     # redirect to the cart page to show the updated cart
     return redirect('show_cart')
 
+
 def get_order_user(request):
     """
     Method that returns the user,
@@ -444,12 +450,12 @@ def get_order_user(request):
 
     # if user is authenticated
     if request.user.is_authenticated:
-
         # get him from request attribute
         return request.user
 
     # return None otherwise
     return None
+
 
 def parse_cart_from_post(post_data):
     """
@@ -487,6 +493,7 @@ def parse_cart_from_post(post_data):
     # return the parsed cart dictionary
     return new_cart
 
+
 def create_order(user, cart):
     """
     Method for creating order and its items
@@ -515,6 +522,7 @@ def create_order(user, cart):
 
     # return created order
     return order
+
 
 def confirm_order(request):
     """
@@ -555,6 +563,7 @@ def confirm_order(request):
     request.session['cart'] = {}
     return redirect('dashboard')
 
+
 @login_required
 def list_user_orders(request):
     """
@@ -585,6 +594,7 @@ def list_user_orders(request):
         'orders_with_items': orders_with_items,
     })
 
+
 @login_required
 def delete_order(request, order_id):
     """
@@ -601,7 +611,7 @@ def delete_order(request, order_id):
     # if order's creator isn't this user
     # -> return the same page with error message
     if request.user != order.user:
-        messages.error(request,'Ви не маєте прпво видалити це замовлення')
+        messages.error(request, 'Ви не маєте прпво видалити це замовлення')
     else:
         # if order's creator is this user
         # -> delete order, its items
@@ -611,6 +621,7 @@ def delete_order(request, order_id):
 
     # redirect to the page of user's orders
     return redirect('list_user_orders')
+
 
 def catalog(request):
     """
@@ -652,7 +663,8 @@ def catalog(request):
         products = products.filter(model_name__icontains=search_query)
 
     # setting(updating) min and max price
-    price_stats = Product.objects.aggregate(min_price=Min('price'), max_price=Max('price'))
+    price_stats = Product.objects.aggregate(min_price=Min('price'),
+                                            max_price=Max('price'))
     min_price = price_stats['min_price'] or 0
     max_price = price_stats['max_price'] or 100000
 
@@ -678,6 +690,7 @@ def catalog(request):
     # return html-catalog page
     return render(request, 'catalog.html', context)
 
+
 def formatted_categories():
     """
     Method that returns a list of all available categories
@@ -688,6 +701,7 @@ def formatted_categories():
         formatted_name = 'Ноутбуки' if cat.name == 'laptop' else 'Смартфони' if cat.name == 'smartphone' else cat.name.title()
         formatted_categories.append({'id': cat.id, 'name': formatted_name})
     return formatted_categories
+
 
 @login_required
 def show_unconfirmed_orders(request):
@@ -737,5 +751,3 @@ def status_change(request, order_id):
             messages.error(request, 'У вас немає прав для підтвердження замовлень.')
 
     return redirect('show_unconfirmed_orders')  # повертаємося назад до списку
-
-

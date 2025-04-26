@@ -13,23 +13,20 @@ class DbService:
         """
         Registration of a new user
         """
-        try:
-            # Checking credentials
-            if not CredentialsService.check_credentials(email, password):
-                raise ValidationError("Неправильна пошта або пароль")
+        # Checking credentials
+        if not CredentialsService.check_credentials(email, password):
+            raise ValidationError("Неправильна пошта або пароль")
 
-            # Checking existence of such user
-            if User.objects.filter(email=email).exists():
-                raise ValidationError("Користувач з таким email вже існує.")
+        # Checking existence of such user
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("Користувач з таким email вже існує.")
 
-            # Creating of new user
-            user = User.objects.create_user(
-                email=email,
-                password=password,
-            )
-            return user
-        except Exception as e:
-            return str(e)
+        # Creating of new user
+        user = User.objects.create_user(
+            email=email,
+            password=password,
+        )
+        return user
 
     @staticmethod
     def sign_in(email: str, password: str):
