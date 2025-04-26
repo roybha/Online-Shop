@@ -81,7 +81,7 @@ def sign_in(request):
             login(request, user)
             request.session.save()
             # Get the next parameter if it exists
-            next_url = request.POST.get('next', 'dashboard')
+            next_url = request.POST.get('next', '/')
             return redirect(next_url)
         else:
 
@@ -104,7 +104,7 @@ def log_out(request):
     logout(request)
 
     # Redirect on the sing in page after exit
-    return redirect('dashboard')
+    return redirect('/')
 
 
 def add_laptop_product(request):

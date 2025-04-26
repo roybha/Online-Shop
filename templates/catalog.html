@@ -6,126 +6,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechStore</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'myapp/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'myapp/css/gradient.css' %}">
+    <style>
+        span {
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
-  <div class="main-container gradient-background">
-      <!-- Navigation Bar -->
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
-          <div class="container-fluid">
+<div class="main-container gradient-background">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary navbar-fixed-top">
+        <div class="container-fluid">
+
             <a class="navbar-brand" href="#">Tech Store</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+
+                <span class="navbar-toggler-icon"></span>
+
             </button>
+
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="#">Каталог</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Категорії
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Ноутбуки</a></li>
-                    <li><a class="dropdown-item" href="#">Смартфони</a></li>
-                  </ul>
-                </li>
-              </ul>
-              <form class="d-flex me-5" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-              </form>
-              <button class="btn btn-outline-primary mx-1">Log In</button>
-              <button class="btn btn-outline-dark">Sign In</button>
-              <div class="cart-container mx-2">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAdVBMVEX///8aGhoAAAD7+/sQEBBTU1OYmJjCwsKUlJSFhYXPz8/d3d0VFRUJCQkUFBQYGBienp7v7+8lJSXl5eXGxsZmZmbe3t5hYWE7Ozt1dXXn5+e2trbV1dVCQkJubm6urq40NDSlpaV+fn5LS0uysrKNjY0rKytl7wLyAAADFUlEQVR4nO3c6XaiMBiAYfxAcAEBd6ut3ez9X+K4ELQtYo7NGKLv86+WOSfvEBOxoucBAAAAAAAAAAAAAAAAAAAAAAAAwOPy+9E662TraOXbHsr/kK/bLVHS2Tq3PSDDVhORIG4paSAy6dkelEHTmSStnxKZ9W0PzBA/rOg7NIZ38YTMZ5JWBm4nq8zu4Ok4epUzfTvyOrI9wL8aBcGxZ5DsV9JkcHwoCJ5sD/Fv8mEZmIrMF2/LaPm2mIuU62owdHqi+u1yjZFW97h09rvDcu4mbZeXm47qiOX9+2x8ei9Po3Qsjc6AVVKsokEa/fpllBYTOE1WFsZmxqyYo4O4asWcqsRkdvORGTIWNUWr18snNVFlfOORmaJO4dkA9V/g6kkcFeOX7tlDuuoQN/f97DD8uGbDy4eHeSrZDcdlzkdweTMotpPg42ajMsiXYi+Y1hw0LfYTcXHX7xWnp117lDrRLl4OL+XSOrNTrDWyvNGoTCoWGvmsPepT3F1qNqKzmxdbomxuNCqT1Pyrf4b1tOZyM1F4cP+FK7cKe1mnFLbLnW686ZwTvgeqMC8fzJq6OfoLOVVc/G0LO3Keuvzoev2TRxfNfIkTVr5tuC2s/sX3o3aFJz+GtmOq+MO4cuzXFMbDJp5Ev7rjqsJmvhJ/5MLOnRXGv9bSTc1aKieFO3HzCwfP0d54Uu6H/ei8LFGF+f7n50HjC8sr3ute06jXCfdT+PN1KYU2UViNwiahsJrLhcWrUan/86faD9XlkkuF/f3H
-                aIL5hX823yeJeuvfpUIv217Bi1z6ZFd/f1T5hrBThd6qOwkvf5QkDyfd40x2q/AaFNpEoR4KbaJQD4U2UaiHQps
-                o1EOhTRTqodAmCvVQaBOFeii0iUI9FNpEoR4KbaJQD4U2UaiHQpso1EOhTRTqodAmCvVQaBOFeii06WEK1Z1dV3
-                Lgzq7WoO5evIscuDvPDAqtuP9C76vybvWrxF+NLNS4oVlXQ79K0X/50yp66qWRp9DbffNHaEJjv/kDAAAAAAAAA
-                AAAAAAAAAAAAAAAAIz4BxRqKeVORMogAAAAAElFTkSuQmCC" height="60" alt="cart">
-              </div>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Каталог</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            Категорії
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Ноутбуки</a></li>
+                            <li><a class="dropdown-item" href="#">Смартфони</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+                <form class="d-flex me-5" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Знайти</button>
+                </form>
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'log_out' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-info mx-1">Вийти</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'sign_in' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary mx-1">Увійти</button>
+                    </form>
+
+                    <form method="post" action="{% url 'sign_up' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-dark">Зареєструватися</button>
+                    </form>
+                {% endif %}
+                <div class="cart-container mx-2">
+                    <img src="{% static 'myapp/images/cart.png' %}" height="30" alt="cart">
+                </div>
             </div>
-          </div>
-      </nav>
+        </div>
+    </nav>
 
-      <!-- Content Area with Sidebar and Products -->
-      <div class="content-area">
-          <!-- Sidebar -->
-          <div class="sidebar-container d-flex flex-column flex-shrink-0 p-3 text-bg-dark">
-              <a href="/" class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none">
-                  <span class="fs-4">Бренди</span>
-              </a>
-              <hr>
-              <ul class="nav nav-pills flex-column gap-2 mb-auto mx-4">
-                  <li>
-                      <div class="slide-container">
-                          <p class="mb-0 pb-0">Ціна</p>
-                          <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-                      </div>
-                  </li>
-                  <li class="nav-item">
-                      <input type="checkbox" id="samsung">
-                      <label for="samsung">Samsung</label>
-                  </li>
-                  <li>
-                      <input type="checkbox" id="apple">
-                      <label for="apple">Apple</label>
-                  </li>
-                  <li>
-                      <input type="checkbox" id="asus">
-                      <label for="asus">Asus</label>
-                  </li>
-                  <li>
-                      <input type="checkbox" id="xiaomi">
-                      <label for="xiaomi">Xiaomi</label>
-                  </li>
-                  <!-- Additional brands -->
-              </ul>
-          </div>
-          
-          <!-- Products Section -->
-          <div class="products-section">
-              {% if products %}
-                  <h2 class="mb-4">Популярні товари</h2>
-                  <div class="products-container">
-                      {% for product in products %}
-                          <!-- Product Card 1 -->
-                          <div class="product-card card">
-                              <img src="{{ product.image_url }}" alt="Smartphone" class="product-img">
-                              <div class="card-body">
-                                  <h5 class="card-title">{{ product.model_name }}</h5>
-                                  <p class="card-text">{{ product.description }}</p>
-                                  <div class="d-flex justify-content-between align-items-center">
-                                      <span class="fw-bold">{{ product.price }}</span>
-                                      <button class="btn btn-dark">Add to Cart</button>
-                                  </div>
-                              </div>
-                          </div>
-                      {% endfor %}
-                  </div>
-              {% endif %}
-          </div>
-      </div>
+    <!-- Content Area with Sidebar and Products -->
+    <div class="content-area">
+        <!-- Sidebar -->
+        <div class="sidebar-container d-flex flex-column flex-shrink-0 p-3 text-bg-dark">
+            <a href="/" class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none">
+                <span class="fs-4">Бренди</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column gap-2 mb-auto mx-4">
+                <li>
+                    <div class="slide-container mb-5">
+                        <p class="mb-0 pb-0">Ціна (грн)</p>
+                        <input type="range" min="{{ min_price }}" max="{{ max_price }}" value="50" class="slider"
+                               id="myRange">
 
-      <!-- Footer -->
-      <footer class="py-3">
-          <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Features</a></li>
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Pricing</a></li>
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">FAQs</a></li>
-              <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">About</a></li>
-          </ul>
-          <p class="text-center text-body-secondary">© 2025 Tech Store, Inc</p>
-      </footer>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span id="current-price">{{ min_price }}</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <input type="checkbox" id="samsung">
+                    <label for="samsung">Samsung</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="apple">
+                    <label for="apple">Apple</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="asus">
+                    <label for="asus">Asus</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="xiaomi">
+                    <label for="xiaomi">Xiaomi</label>
+                </li>
+                <!-- Additional brands -->
+            </ul>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products-section">
+
+            {% if products %}
+                <h2 class="mb-4">Популярні товари</h2>
+
+                <div class="products-container">
+
+                    {% for product in products %}
+                        <!-- Product Card -->
+                        <div class="product-card card">
+                            <a href="{% url 'product_detail' product.category product.model_name %}"
+                               class="stretched-link"></a>
+                            
+                            <img src="{{ product.image_url }}" alt="Smartphone" class="product-img">
+
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.model_name }}</h5>
+                                <p class="card-text">{{ product.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">{{ product.price }}</span>
+                                    <form method="post" action="{% url 'add_to_cart' product_id=product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                        <button type="submit" class="btn btn-dark">Купити</button>
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-3">
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+            <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Features</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Pricing</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">FAQs</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">About</a></li>
+        </ul>
+        <p class="text-center text-body-secondary">© 2025 Tech Store, Inc</p>
+    </footer>
+</div>
+<script>
+    const slider = document.getElementById('myRange');
+    const currentPrice = document.getElementById('current-price');
+
+    slider.addEventListener('input', function () {
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const val = parseFloat(slider.value);
+
+        const sliderWidth = slider.clientWidth;
+
+        const percent = (val - min) / (max - min);
+
+        const thumbX = percent * sliderWidth + 20;
+
+        currentPrice.textContent = this.value;
+        currentPrice.textContent = val;
+        currentPrice.style.position = 'absolute';
+        currentPrice.style.left = thumbX + 'px';
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+        crossorigin="anonymous"></script>
 </body>
 </html>

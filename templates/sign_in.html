@@ -78,6 +78,7 @@
 <script>
     function togglePassword() {
         const passwordInput = document.getElementById("floatingPassword");
+        const button = document.querySelector(".eye");
         if (passwordInput.type === "password" && passwordInput.value.trim() !== "") {
             passwordInput.type = "text";
         } else {

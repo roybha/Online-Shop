@@ -104,9 +104,12 @@ footer {
   margin-top: auto;
 }
 
-.cart-container {
-  border: 0.1rem solid black;
-  border-radius: 0.5rem;
+.cart-container img {
+  margin-left: 2rem;
+  margin-right: 0.5rem;
+  border: none;
   overflow: hidden;
   background-clip: padding-box;
 }
+
+
