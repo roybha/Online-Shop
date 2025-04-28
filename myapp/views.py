@@ -407,8 +407,12 @@ def show_cart(request):
     # calculating common price of potential order
     total_price = sum(item['total'] for item in cart_items)
 
+    # get the total number of items in the cart
+    cart_item_count = sum(cart.values())
+
     # render cart html page with its items
     return render(request, 'cart.html', {
+        'cart_item_count': cart_item_count,
         'cart_items': cart_items,
         'total_price': total_price
     })
@@ -430,10 +434,6 @@ def remove_from_cart(request, product_id):
         del cart[str(product_id)]
         # save the updated cart to the session
         request.session['cart'] = cart
-        messages.success(request, 'Товар успішно видалено з кошика.')
-    else:
-        # if the product is not in the cart
-        messages.error(request, 'Товар не знайдено в кошику.')
 
     # redirect to the cart page to show the updated cart
     return redirect('show_cart')
@@ -673,8 +673,13 @@ def catalog(request):
     if selected_price:
         products = products.filter(price__lte=selected_price)
 
+    # get the total number of products in the cart
+    cart = request.session.get('cart', {})
+    cart_item_count = sum(cart.values())
+
     # set all data into html-variables
     context = {
+        'cart_item_count': cart_item_count,
         'products': products,
         'brands': Product.objects.values_list('brand__name', flat=True).distinct(),
         'categories': formatted_categories(),

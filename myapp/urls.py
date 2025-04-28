@@ -57,7 +57,7 @@ urlpatterns = [
          name='add_to_cart'),
 
     # path for show current cart
-    path('cart/show',
+    path('cart',
          views.show_cart,
          name='show_cart'),
 

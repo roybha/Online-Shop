@@ -1,61 +1,148 @@
-{% if cart_items %}
-  <form method="post" action="{% url 'confirm_order' %}">
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'myapp/css/cart-style.css' %}">
+    <link rel="stylesheet" href="{% static 'myapp/css/gradient.css' %}">
+</head>
+<body class="gradient-background">
+<form method="post" action="{% url 'confirm_order' %}" class="container d-flex align-items-center">
     {% csrf_token %}
-    
-    <table>
-      {% for item in cart_items %}
-        <tr>
-          <td>{{ item.product.model_name }}</td>
-          <td>
-            <label for="product_{{ item.product.id }}" class="visually-hidden">
-              Кількість
-            </label>
-            <input type="number"
-                   id="product_{{ item.product.id }}"
-                   name="product_{{ item.product.id }}"
-                   value="{{ item.quantity }}"
-                   min="1"
-                   max="10"
-            >
-          </td>
-          <td>{{ item.total }}</td>
-        </tr>
-      {% endfor %}
-    </table>
-    
-    <p>Загальна сума: {{ total_price }} ₴</p>
-    <button type="submit">Оформити замовлення</button>
-  </form>
 
-  <hr> <!-- Додаємо роздільник між формами -->
+    <div class="card">
+        <div class="row">
+            <div class="col-md-8 cart">
+                <div class="title">
+                    <div class="row">
+                        <div class="col"><h4><b>Кошик</b></h4></div>
+                        <div class="col align-self-center text-right text-muted">
+                        </div>
+                    </div>
+                </div>
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                        <div class="row border-top border-bottom">
+                            <div class="row main align-items-center">
+                                <div class="col-2"><img alt="{{ item.product.model_name }}" class="img-fluid"
+                                                        src="{{ item.product.image_url }}"></div>
+                                <div class="col">
+                                    <div class="row">{{ item.product.model_name }}</div>
+                                </div>
+                                <div class="col">
+                                    <label for="product_{{ item.product.id }}" class="visually-hidden">
+                                    </label>
+                                    <input type="number"
+                                           id="product_{{ item.product.id }}"
+                                           name="product_{{ item.product.id }}"
+                                           value="{{ item.quantity }}"
+                                           min="1"
+                                           max="10"
+                                           onchange="updatePrices()"
+                                           class="product-quantity"
+                                           data-price="{{ item.product.price }}"
+                                           data-product-id="{{ item.product.id }}">
+                                </div>
+                                <div class="col">
+                                    <span id="subtotal-{{ item.product.id }}">
+                                        {{ item.product.price|floatformat:2 }}
+                                    </span> &#8372;
+                                    <a href="{% url 'remove_from_cart' item.product.id %}" class="close">&#10005;</a>
+                                </div>
 
-  <!-- Окрема форма для видалення товарів з кошика -->
-  {% for item in cart_items %}
-    <form method="post" action="{% url 'remove_from_cart' product_id=item.product.id %}">
-      {% csrf_token %}
-      <button type="submit" class="remove-item-button">Видалити</button>
-    </form>
-  {% endfor %}
-  
-  {% if messages %}
-    <ul>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-  
-  <a href="{% url 'dashboard' %}">Повернутись на головну</a>
 
-{% else %}
-  <p>Ваш кошик порожній.</p>
-  <a href="{% url 'dashboard' %}">Повернутись на головну</a>
-{% endif %}
-{% if messages %}
-    <ul>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h2>Кошик порожній</h2>
+                {% endif %}
+                <div class="back-to-shop"><a href="{% url 'catalog' %}"><span class="text-muted">&leftarrow; Повернутися до каталогу</span></a>
+                </div>
+            </div>
+            {% if cart_items %}
+                <div class="col-md-4 summary">
+                    <div><h5><b>ЗАГАЛОМ</b></h5></div>
+                    <hr>
+                    <div class="row">
+                        <div class="col mb-4" style="padding-left:0;">ТОВАРІВ:</div>
+                        <div class="col text-right">{{ cart_item_count }}</div>
+                    </div>
+                    <form>
+                        <p>СПОСІБ ДОСТАВКИ</p>
+                        <select onchange="updatePrices()">
+                            <option class="text-muted">Нова Пошта - 150 &#8372</option>
+                            <option class="text-muted">УкрПошта - 100 &#8372</option>
+                        </select>
+                    </form>
+                    <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
+                        <div class="col">СУМА</div>
+                        <div class="col text-right" id="total-price">{{ total_price }} &#8372;</div>
+                    </div>
+
+                    <button type="submit" class="btn">ЗАМОВИТИ</button>
+                </div>
+                </div>
+            {% endif %}
+
+    </div>
+</form>
+<script>
+    function updatePrices() {
+        let total = 0;
+        const quantityInputs = document.querySelectorAll('.product-quantity');
+
+        // Update each product's subtotal
+        quantityInputs.forEach(input => {
+            const quantity = parseInt(input.value);
+            const price = parseFloat(input.getAttribute('data-price'));
+            const productId = input.getAttribute('data-product-id');
+
+            const subtotal = quantity * price;
+            total += subtotal;
+
+            // Update the displayed subtotal for this product
+            document.getElementById(`subtotal-${productId}`).textContent = subtotal.toFixed(2);
+        });
+
+        // Add shipping cost if needed
+        const shippingSelect = document.querySelector('select');
+        let shippingCost = 0;
+        if (shippingSelect) {
+            // Extract shipping cost from the selected option text
+            const shippingText = shippingSelect.options[shippingSelect.selectedIndex].text;
+            const shippingMatch = shippingText.match(/[0-9]+(\.[0-9]+)?/);
+            if (shippingMatch) {
+                shippingCost = parseFloat(shippingMatch[0]);
+            }
+        }
+
+        // Update total price
+        const finalTotal = total + shippingCost;
+        document.querySelector('#total-price').textContent = `${finalTotal.toFixed(2)} ₴`;
+
+        // Update items count
+        document.querySelector('.summary .row:first-child .col.text-right').textContent = `${total.toFixed(2)} грн`;
+    }
+
+    // Initialize prices on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        updatePrices();
+
+        // Add event listener to shipping select
+        const shippingSelect = document.querySelector('select');
+        if (shippingSelect) {
+            shippingSelect.addEventListener('change', updatePrices);
+        }
+    });
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</body>
+</html>
 
