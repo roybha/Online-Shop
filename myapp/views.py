@@ -175,7 +175,7 @@ def add_laptop_product(request):
             product.brand = product_brand
 
             # set custom model name
-            product.model_name = f'Ноутбук {product_brand.name} {product_form.cleaned_data.get('model_name')}'
+            product.model_name = f"Ноутбук {product_brand.name} {product_form.cleaned_data.get('model_name')}"
 
             # store the finished product object in the database
             product.save()
@@ -260,7 +260,7 @@ def add_smartphone_product(request):
             product.brand = product_brand
 
             # set custom model name
-            product.model_name = f'Смартфон {product_brand.name} {product_form.cleaned_data.get('model_name')}'
+            product.model_name = f"Смартфон {product_brand.name} {product_form.cleaned_data.get('model_name')}"
 
             # store the finished product object in the database
             product.save()
