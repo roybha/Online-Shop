@@ -73,18 +73,17 @@
                         <div class="col mb-4" style="padding-left:0;">ТОВАРІВ:</div>
                         <div class="col text-right">{{ cart_item_count }}</div>
                     </div>
-                    <form>
-                        <p>СПОСІБ ДОСТАВКИ</p>
-                        <select onchange="updatePrices()">
-                            <option class="text-muted">Нова Пошта - 150 &#8372</option>
-                            <option class="text-muted">УкрПошта - 100 &#8372</option>
-                        </select>
-                    </form>
+                    <p>СПОСІБ ДОСТАВКИ</p>
+                    <input type="hidden" id="delivery_price" name="delivery_price" value="150">
+                    <select onchange="updatePrices()">
+                        <option class="text-muted">Нова Пошта - 150 &#8372</option>
+                        <option class="text-muted">УкрПошта - 100 &#8372</option>
+                    </select>
                     <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                         <div class="col">СУМА</div>
                         <div class="col text-right" id="total-price">{{ total_price }} &#8372;</div>
                     </div>
-                    
+
                     <button type="submit" class="btn">ЗАМОВИТИ</button>
                 </div>
                 </div>
@@ -97,7 +96,6 @@
         let total = 0;
         const quantityInputs = document.querySelectorAll('.product-quantity');
 
-        // Update each product's subtotal
         quantityInputs.forEach(input => {
             const quantity = parseInt(input.value);
             const price = parseFloat(input.getAttribute('data-price'));
@@ -106,40 +104,39 @@
             const subtotal = quantity * price;
             total += subtotal;
 
-            // Update the displayed subtotal for this product
             document.getElementById(`subtotal-${productId}`).textContent = subtotal.toFixed(2);
         });
 
-        // Add shipping cost if needed
         const shippingSelect = document.querySelector('select');
         let shippingCost = 0;
         if (shippingSelect) {
-            // Extract shipping cost from the selected option text
-            const shippingText = shippingSelect.options[shippingSelect.selectedIndex].text;
-            const shippingMatch = shippingText.match(/[0-9]+(\.[0-9]+)?/);
+            const selectedOption = shippingSelect.options[shippingSelect.selectedIndex].text;
+            const shippingMatch = selectedOption.match(/[0-9]+(\.[0-9]+)?/);
             if (shippingMatch) {
                 shippingCost = parseFloat(shippingMatch[0]);
+                total += shippingCost;
+
+                // UPDATE hidden input value
+                document.getElementById('delivery_price').value = shippingCost;
             }
         }
 
-        // Update total price
-        const finalTotal = total + shippingCost;
-        document.querySelector('#total-price').textContent = `${finalTotal.toFixed(2)} ₴`;
+        document.getElementById('total-price').textContent = `${total.toFixed(2)} ₴`;
 
-        // Update items count
-        document.querySelector('.summary .row:first-child .col.text-right').textContent = `${total.toFixed(2)} грн`;
+        const productsCount = Array.from(quantityInputs).reduce((sum, input) => sum + parseInt(input.value), 0);
+        document.querySelector('.summary .row:nth-child(2) .col.text-right').textContent = productsCount;
     }
-
-    // Initialize prices on page load
+    
     document.addEventListener('DOMContentLoaded', function () {
         updatePrices();
 
-        // Add event listener to shipping select
+        // Also update price when delivery option is changed
         const shippingSelect = document.querySelector('select');
         if (shippingSelect) {
             shippingSelect.addEventListener('change', updatePrices);
         }
     });
+
 </script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

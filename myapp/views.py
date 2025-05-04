@@ -494,7 +494,7 @@ def parse_cart_from_post(post_data):
     return new_cart
 
 
-def create_order(user, cart):
+def create_order(user, cart, delivery_price):
     """
     Method for creating order and its items
     :param user: user that making an order
@@ -515,7 +515,7 @@ def create_order(user, cart):
         total += product.price * quantity
 
     # set price of order after calculations
-    order.price = total
+    order.price = total + delivery_price
 
     # save new order into db
     order.save()
@@ -556,8 +556,11 @@ def confirm_order(request):
     # save the updated cart to the session
     request.session['cart'] = new_cart
 
+    # get the price of chosen delivery
+    delivery_price = int(request.POST.get('delivery_price'))
+
     # 3) create the order using the user and cart data
-    create_order(user, new_cart)
+    create_order(user, new_cart, delivery_price)
 
     # 4) clear the cart in the session and redirect to the dashboard
     request.session['cart'] = {}
@@ -582,7 +585,7 @@ def list_user_orders(request):
     orders_with_items = []
     for order in orders:
         items = OrderItem.objects.filter(order_id=order.id).select_related('product')
-        total_price = sum(item.product.price * item.quantity for item in items)
+        total_price = order.price
         orders_with_items.append({
             'order': order,
             'items': items,
