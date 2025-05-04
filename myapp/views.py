@@ -1,3 +1,6 @@
+from django.utils import timezone
+from datetime import timedelta
+
 from django.shortcuts import render, redirect
 from myapp.services.db_service import DbService
 from django.contrib.auth import logout, login
@@ -5,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from myapp.models import (User, Brand, Product, Category,
                           Laptop, Smartphone, Order, OrderItem)
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Sum
 from .forms import LaptopForm, ProductForm, SmartphoneForm
 
 
@@ -314,7 +317,25 @@ def dashboard(request):
     :param request: Http request object
     :return: dashboard html page
     """
-    return render(request, 'dashboard.html')
+    # get number of orders made in the last 7 days
+    seven_days_ago = timezone.now() - timedelta(days=7)
+    recent_orders_count = Order.objects.filter(order_date__gte=seven_days_ago).count()
+
+    # get the revenue made in month
+    month_period = timezone.now() - timedelta(days=30)
+    monthly_revenue = (
+            Order.objects.filter(order_date__gte=month_period)
+            .aggregate(total=Sum('price'))['total'] or 0
+    )
+
+    # get total number of products in the system
+    total_product_count = Product.objects.count()
+
+
+    return render(request, 'dashboard.html',
+                  {'recent_orders_count': recent_orders_count,
+                   'monthly_revenue': monthly_revenue,
+                  'total_product_count': total_product_count})
 
 
 def product_detail(request, product_category: str, product_name: str):
@@ -567,29 +588,39 @@ def confirm_order(request):
 @login_required
 def list_user_orders(request):
     """
-    Method that returns all orders of current user
+    Method that returns all orders of current user with detailed information
+    including delivery price and proper item subtotals
+
     :param request: Http request object
     :return: html-page with list of orders
     """
-
-    # get current user from request attribute
+    # Get current user from request attribute
     user = request.user
 
-    # get all user's orders sorted by date
-    orders = Order.objects.filter(user=user).order_by('order_date')
+    # Get all user's orders sorted by date (newest first)
+    orders = Order.objects.filter(user=user).order_by('-order_date')
 
-    # add to every order its items from OrderItem's table
+    # Add to every order its items from OrderItem's table
     orders_with_items = []
     for order in orders:
+        # Get all items related to this order
         items = OrderItem.objects.filter(order_id=order.id).select_related('product')
-        total_price = order.price
+
+        # Calculate subtotal (sum of all items before delivery)
+        subtotal_price = sum(item.quantity * item.product.price for item in items)
+
+        # Calculate delivery price
+        delivery_price = order.price - subtotal_price
+
         orders_with_items.append({
             'order': order,
             'items': items,
-            'total_price': total_price,
+            'subtotal_price': subtotal_price,
+            'delivery_price': delivery_price,
+            'total_price': order.price,
         })
 
-    # return html page with collected orders
+    # Return html page with collected orders
     return render(request, 'orders.html', {
         'orders_with_items': orders_with_items,
     })
