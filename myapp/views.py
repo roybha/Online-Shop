@@ -376,11 +376,8 @@ def add_to_cart(request, product_id):
     # save the updated cart in the session
     request.session['cart'] = cart
 
-    # redirect the user to the page
-    # where adding has been called
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
+    # redirect the user to the cart page
+    return redirect('show_cart')
 
 
 def show_cart(request):

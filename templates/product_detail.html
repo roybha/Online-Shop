@@ -2,88 +2,361 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Деталі товару: {{ product.model_name }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
-        .product {
-            border: 1px solid #ccc;
-            padding: 15px;
-            border-radius: 5px;
-            max-width: 700px;
-            margin: auto;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #16a085;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
         }
-
-        .product img {
+        
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: var(--light-gray);
+            color: #495057;
+        }
+        
+        .product-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            background-color: #fff;
+        }
+        
+        .product-image {
+            position: relative;
+            overflow: hidden;
+            background-color: #fff;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .product-image img {
+            max-height: 100%;
             max-width: 100%;
-            height: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-image:hover img {
+            transform: scale(1.05);
+        }
+        
+        .badge-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+        }
+        
+        .product-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .specs-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+            background-color: #fff;
+            transition: transform 0.2s;
+        }
+        
+        .specs-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .specs-header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .specs-body {
+            padding: 20px;
+        }
+        
+        .spec-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .spec-item:last-child {
+            border-bottom: none;
+        }
+        
+        .spec-label {
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+        
+        .btn-add-to-cart {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-add-to-cart:hover {
+            background-color: #128f76;
+            border-color: #128f76;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(22, 160, 133, 0.3);
+        }
+        
+        .btn-back {
+            color: var(--primary-color);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-back:hover {
+            color: var(--secondary-color);
+        }
+        
+        .brand-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .category-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
-        .specs {
-            margin-top: 20px;
-        }
-
-        .specs p {
-            margin: 5px 0;
+        @media (max-width: 767.98px) {
+            .product-image {
+                height: 220px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="product">
-        <h1>{{ product.model_name }}</h1>
-        <img src="{{ product.image_url }}" alt="{{ product.model_name }}">
-        <p><strong>Опис:</strong> {{ product.description }}</p>
-        <p><strong>Ціна:</strong> {{ product.price }} грн</p>
-        <p><strong>Бренд:</strong> {{ product.brand.name }}</p>
-        <p><strong>Категорія:</strong> 
-           {% if product.category.name == 'laptop' %}
-               Ноутбук
-           {% else %}
-               Смартфон
-           {% endif %}
-        </p>
-
-
-        {% if product.category.name|lower == 'laptop' %}
-            <div class="specs">
-                <h2>Характеристики ноутбука</h2>
-                <p><strong>Діагональ:</strong> {{ extra_info.screen_size }} дюймів</p>
-                <p><strong>Роздільна здатність:</strong> {{ extra_info.scree_resolution }}</p>
-                <p><strong>Частота оновлення екрану:</strong> {{ extra_info.screen_ref_rate }} Гц</p>
-                <p><strong>Процесор:</strong> {{ extra_info.cpu_brand.name }} {{ extra_info.cpu_model }}</p>
-                <p><strong>Кількість ядер:</strong> {{ extra_info.cpu_cores_num }}</p>
-                <p><strong>Частота CPU:</strong> {{ extra_info.cpu_frequency }} ГГц</p>
-                <p><strong>Оперативна памʼять:</strong> {{ extra_info.ram }} ГБ ({{ extra_info.ram_type }})</p>
-                <p><strong>Накопичувач:</strong> {{ extra_info.storage }} ГБ ({{ extra_info.storage_type }})</p>
-                <p><strong>Відеокарта:</strong> {{ extra_info.gpu_brand.name }} {{ extra_info.gpu_model }}</p>
-            </div>
-        {% elif product.category.name|lower == 'smartphone' %}
-            <div class="specs">
-                <h2>Характеристики смартфона</h2>
-                <p><strong>Діагональ:</strong> {{ extra_info.screen_size }} дюймів</p>
-                <p><strong>Роздільна здатність:</strong> {{ extra_info.screen_resolution }}</p>
-                <p><strong>Частота оновлення екрану:</strong> {{ extra_info.screen_ref_rate }} Гц</p>
-                <p><strong>SIM-карт:</strong> {{ extra_info.sim_quantity }}</p>
-                <p><strong>Мережа:</strong> {{ extra_info.network_generations }}</p>
-                <p><strong>Процесор:</strong> {{ extra_info.cpu_model }}</p>
-                <p><strong>Кількість ядер:</strong> {{ extra_info.cpu_cores_num }}</p>
-                <p><strong>RAM:</strong> {{ extra_info.ram }} ГБ</p>
-                <p><strong>Памʼять:</strong> {{ extra_info.storage }} ГБ</p>
-                <p><strong>Основна камера:</strong> {{ extra_info.main_camera }}</p>
-                <p><strong>Макс. роздільна здатність відео:</strong> {{ extra_info.max_video_resolution }}</p>
-                <p><strong>Фронтальна камера:</strong> {{ extra_info.frontal_camera }}</p>
-                <p><strong>NFC:</strong> {{ extra_info.nfc|yesno:"Так,Ні" }}</p>
-                <p><strong>Конектор для зарядки:</strong> {{ extra_info.connector_type }}</p>
-                <p><strong>Батарея:</strong> {{ extra_info.battery }} мА·год</p>
-                <p><strong>Вага:</strong> {{ extra_info.weight }} г</p>
-            </div>
-        {% endif %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'catalog' %}" class="text-decoration-none">Головна</a></li>
+                    <li class="breadcrumb-item">
+                        {% if product.category.name == 'laptop' %}
+                            <a href="{% url 'catalog' %}?category=1" class="text-decoration-none">Ноутбуки</a>
+                        {% else %}
+                            <a href="{% url 'catalog' %}?category=2" class="text-decoration-none">Смартфони</a>
+                        {% endif %}
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ product.model_name }}</li>
+                </ol>
+            </nav>
+        </div>
     </div>
-    <form method="post" action="{% url 'add_to_cart' product_id=product.id%}">
-        {% csrf_token %}
-         <input type="hidden" name="next" value="{{ request.get_full_path }}">
-        <button type="submit">Додати до кошика</button>
-    </form>
-   <a href="/dashboard">Повернутись на головну</a>
 
+    <div class="row g-4">
+        <!-- Product Image and Basic Info -->
+        <div class="col-lg-5">
+            <div class="product-card mb-4">
+                <div class="product-image">
+                    <div class="badge-container">
+                        <span class="brand-badge">{{ product.brand.name }}</span>
+                        {% if product.category.name == 'laptop' %}
+                            <span class="category-badge ms-2">Ноутбук</span>
+                        {% else %}
+                            <span class="category-badge ms-2">Смартфон</span>
+                        {% endif %}
+                    </div>
+                    <img src="{{ product.image_url }}" alt="{{ product.model_name }}" class="img-fluid">
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-lg-7">
+            <div class="product-card p-4">
+                <h1 class="product-title display-6">{{ product.model_name }}</h1>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="price me-3">{{ product.price }} грн</div>
+                    <div class="text-success"><i class="bi bi-check-circle"></i> В наявності</div>
+                </div>
+                
+                <p class="lead mb-4">{{ product.description }}</p>
+                
+                <form method="post" action="{% url 'add_to_cart' product_id=product.id %}" class="d-flex gap-3 mb-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn btn-add-to-cart">
+                        <i class="bi bi-cart-plus me-2"></i>Додати до кошика
+                    </button>
+                    <a href="{% url 'catalog' %}" class="btn btn-outline-secondary btn-back">
+                        <i class="bi bi-arrow-left me-2"></i>На головну
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Specifications -->
+    <div class="row mt-5">
+        <div class="col-12">
+            {% if product.category.name|lower == 'laptop' %}
+                <div class="specs-card">
+                    <div class="specs-header">
+                        <h2 class="h4 mb-0"><i class="bi bi-laptop me-2"></i>Характеристики ноутбука</h2>
+                    </div>
+                    <div class="specs-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="spec-item">
+                                    <span class="spec-label">Діагональ:</span>
+                                    <span class="float-end">{{ extra_info.screen_size }} дюймів</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Роздільна здатність:</span>
+                                    <span class="float-end">{{ extra_info.scree_resolution }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Частота оновлення:</span>
+                                    <span class="float-end">{{ extra_info.screen_ref_rate }} Гц</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Процесор:</span>
+                                    <span class="float-end">{{ extra_info.cpu_brand.name }} {{ extra_info.cpu_model }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Кількість ядер:</span>
+                                    <span class="float-end">{{ extra_info.cpu_cores_num }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="spec-item">
+                                    <span class="spec-label">Частота CPU:</span>
+                                    <span class="float-end">{{ extra_info.cpu_frequency }} ГГц</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Оперативна пам'ять:</span>
+                                    <span class="float-end">{{ extra_info.ram }} ГБ ({{ extra_info.ram_type }})</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Накопичувач:</span>
+                                    <span class="float-end">{{ extra_info.storage }} ГБ ({{ extra_info.storage_type }})</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Відеокарта:</span>
+                                    <span class="float-end">{{ extra_info.gpu_brand.name }} {{ extra_info.gpu_model }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% elif product.category.name|lower == 'smartphone' %}
+                <div class="specs-card">
+                    <div class="specs-header">
+                        <h2 class="h4 mb-0"><i class="bi bi-phone me-2"></i>Характеристики смартфона</h2>
+                    </div>
+                    <div class="specs-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="spec-item">
+                                    <span class="spec-label">Діагональ:</span>
+                                    <span class="float-end">{{ extra_info.screen_size }} дюймів</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Роздільна здатність:</span>
+                                    <span class="float-end">{{ extra_info.screen_resolution }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Частота оновлення:</span>
+                                    <span class="float-end">{{ extra_info.screen_ref_rate }} Гц</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">SIM-карт:</span>
+                                    <span class="float-end">{{ extra_info.sim_quantity }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Мережа:</span>
+                                    <span class="float-end">{{ extra_info.network_generations }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Процесор:</span>
+                                    <span class="float-end">{{ extra_info.cpu_model }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Кількість ядер:</span>
+                                    <span class="float-end">{{ extra_info.cpu_cores_num }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">RAM:</span>
+                                    <span class="float-end">{{ extra_info.ram }} ГБ</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="spec-item">
+                                    <span class="spec-label">Пам'ять:</span>
+                                    <span class="float-end">{{ extra_info.storage }} ГБ</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Основна камера:</span>
+                                    <span class="float-end">{{ extra_info.main_camera }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Макс. роздільна здатність відео:</span>
+                                    <span class="float-end">{{ extra_info.max_video_resolution }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Фронтальна камера:</span>
+                                    <span class="float-end">{{ extra_info.frontal_camera }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">NFC:</span>
+                                    <span class="float-end">{{ extra_info.nfc|yesno:"Так,Ні" }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Конектор для зарядки:</span>
+                                    <span class="float-end">{{ extra_info.connector_type }}</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Батарея:</span>
+                                    <span class="float-end">{{ extra_info.battery }} мА·год</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Вага:</span>
+                                    <span class="float-end">{{ extra_info.weight }} г</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
