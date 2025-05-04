@@ -232,40 +232,6 @@
             gap: 15px;
         }
 
-        .action-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background-color: #f8fafc;
-            color: var(--secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .action-icon:hover {
-            background-color: #e2e8f0;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         /* Dashboard Cards */
         .dashboard-stats {
             display: grid;
@@ -432,7 +398,7 @@
                 <a href="{% url 'show_unconfirmed_orders' %}" class="nav-link">
                     <div class="nav-icon"><i class="bi bi-bag"></i></div>
                     <span>Замовлення</span>
-                    <span class="nav-badge">5</span>
+                    <span class="nav-badge">{{ unconfirmed_orders_count }}</span>
                 </a>
             </li>
         </ul>
@@ -470,7 +436,7 @@
         </button>
 
         <div class="user-actions">
-            
+
         </div>
     </div>
 

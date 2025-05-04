@@ -19,6 +19,9 @@ def sign_up(request):
     :return: sign up page
     """
 
+    if request.user.is_authenticated and request.user.role == 'seller':
+        return redirect('dashboard')
+
     # check if both email and password
     # are provided in the POST request
     if (request.POST.get('email') is not None
@@ -84,9 +87,6 @@ def sign_in(request):
             login(request, user)
             request.session.save()
 
-            if user.role == 'seller':
-                return redirect('dashboard')
-
             # Get the next parameter if it exists
             next_url = request.POST.get('next', '/')
             return redirect(next_url)
@@ -107,8 +107,6 @@ def log_out(request):
     :param request: Http request object
     :return: sign in page
     """
-    if request.user.role == 'seller':
-        return redirect('sign_in')
 
     # Call the embedded Django method for logging out
     logout(request)
@@ -301,6 +299,9 @@ def get_all_products_by_category(request, category_name: str):
     :return: page of available products by category
     """
 
+    if request.user.is_authenticated and request.user.role == 'seller':
+        return redirect('dashboard')
+
     # search specific category in correspond table
     category = Category.objects.get(name=category_name)
 
@@ -331,17 +332,21 @@ def dashboard(request):
     # get the revenue made in month
     month_period = timezone.now() - timedelta(days=30)
     monthly_revenue = (
-            Order.objects.filter(order_date__gte=month_period)
+            Order.objects.filter(order_date__gte=month_period, status=True)
             .aggregate(total=Sum('price'))['total'] or 0
     )
 
     # get total number of products in the system
     total_product_count = Product.objects.count()
 
+    # get number of unconfirmed orders
+    unconfirmed_orders_count = Order.objects.filter(status=False).count()
+
     return render(request, 'dashboard.html',
                   {'recent_orders_count': recent_orders_count,
                    'monthly_revenue': monthly_revenue,
-                   'total_product_count': total_product_count})
+                   'total_product_count': total_product_count,
+                   'unconfirmed_orders_count': unconfirmed_orders_count})
 
 
 def product_detail(request, product_category: str, product_name: str):
@@ -353,7 +358,7 @@ def product_detail(request, product_category: str, product_name: str):
     :return: html page with details of specific product by its category
     """
 
-    if request.user.role == 'seller':
+    if request.user.is_authenticated and request.user.role == 'seller':
         return redirect('dashboard')
 
     # find category which connected to our product
@@ -389,6 +394,9 @@ def add_to_cart(request, product_id):
     that will be added to the cart
     :return: current cart
     """
+    if request.user.is_authenticated and request.user.role == 'seller':
+        return redirect('dashboard')
+
     # get the current cart from the session
     # or create an empty one if it doesn't already exist
     cart = request.session.get('cart', {})
@@ -416,7 +424,8 @@ def show_cart(request):
     :param request: Http request object
     :return: html page with cart's items
     """
-    if request.user.role == 'seller':
+
+    if request.user.is_authenticated and request.user.role == 'seller':
         return redirect('dashboard')
 
     # get the cart from the session (keys are string IDs of products)
@@ -455,6 +464,9 @@ def remove_from_cart(request, product_id):
     :param product_id: id of the specific product to remove
     :return: redirect to the updated cart page
     """
+    if request.user.is_authenticated and request.user.role == 'seller':
+        return redirect('dashboard')
+
     # get the current cart from the session (cart is a dictionary where keys are product IDs)
     cart = request.session.get('cart', {})
 
@@ -561,6 +573,9 @@ def confirm_order(request):
     :return: redirect to dashboard or show_cart
     """
 
+    if request.user.is_authenticated and request.user.role == 'seller':
+        return redirect('dashboard')
+
     # if the request method is not POST, redirect to the show_cart page
     if request.method != 'POST':
         return redirect('show_cart')
@@ -570,7 +585,7 @@ def confirm_order(request):
 
     # if user is not authenticated, redirect to sign-in page with the referer
     if not user:
-        referer = '/cart/show'
+        referer = '/cart'
 
         # here, we are redirecting to 'sign_in' with the `next` parameter
         return redirect(f'/sign-in?next={referer}')
@@ -594,7 +609,7 @@ def confirm_order(request):
 
     # 4) clear the cart in the session and redirect to the dashboard
     request.session['cart'] = {}
-    return redirect('dashboard')
+    return redirect('list_user_orders')
 
 
 @login_required
@@ -606,6 +621,10 @@ def list_user_orders(request):
     :param request: Http request object
     :return: html-page with list of orders
     """
+
+    if request.user.is_authenticated and request.user.role == 'seller':
+        return redirect('dashboard')
+
     # Get current user from request attribute
     user = request.user
 
@@ -647,6 +666,9 @@ def delete_order(request, order_id):
     :return: updated list of orders of specified user
     """
 
+    if request.user.is_authenticated and request.user.role == 'seller':
+        return redirect('dashboard')
+
     # search in Order table order
     # with this id
     order = Order.objects.get(id=order_id)
@@ -674,7 +696,7 @@ def catalog(request):
     with potential filters
     """
 
-    if request.user.role == 'seller':
+    if request.user.is_authenticated and request.user.role == 'seller':
         return redirect('dashboard')
 
     # find all products into db
