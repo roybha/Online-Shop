@@ -14,11 +14,74 @@
         span {
             font-size: 0.8rem;
         }
+
+        .slide-container {
+            position: relative;
+            padding-bottom: 20px; 
+        }
+        
+        #current-price {
+            position: absolute;
+            left: 0; 
+        }
+
+        .sidebar-container form {
+            width: 100%;
+        }
+
+        .brand-filters label {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .brand-filters input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .filter-btn {
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .filter-badge {
+            background-color: #343a40;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .filter-badge .remove-filter {
+            margin-left: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <div class="main-container gradient-background">
-    <!-- Navigation Bar -->
+
     <nav class="navbar navbar-expand-lg bg-body-tertiary navbar-fixed-top">
         <div class="container-fluid">
 
@@ -36,7 +99,7 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Каталог</a>
+                        <a class="nav-link active" aria-current="page" href="{% url 'catalog' %}">Каталог</a>
                     </li>
 
                     <li class="nav-item dropdown">
@@ -45,17 +108,25 @@
                             Категорії
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Ноутбуки</a></li>
-                            <li><a class="dropdown-item" href="#">Смартфони</a></li>
+                            {% for category in categories %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'catalog' %}?category={{ category.id }}">
+                                        {{ category.name }}
+                                    </a>
+                                </li>
+                            {% empty %}
+                                <li><a class="dropdown-item disabled">Немає доступних категорій</a></li>
+                            {% endfor %}
                         </ul>
                     </li>
 
                 </ul>
-                <form class="d-flex me-5" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex me-5" role="search" method="GET" action="{% url 'catalog' %}">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                           name="q" value="{{ search_query|default:'' }}">
                     <button class="btn btn-outline-success" type="submit">Знайти</button>
                 </form>
-                
+
                 <div class="dropdown mx-3">
                     <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenu2"
                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -68,23 +139,23 @@
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item">Мої замовлення</button>
                             </form>
-                            
+
                             <form method="post" action="{% url 'log_out' %}">
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item">Вийти</button>
                             </form>
-                            
+
                         {% else %}
                             <form method="post" action="{% url 'sign_in' %}">
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item">Увійти</button>
                             </form>
-                            
+
                             <form method="post" action="{% url 'sign_up' %}">
                                 {% csrf_token %}
                                 <button type="submit" class="dropdown-item">Зареєструватися</button>
                             </form>
-                            
+
                         {% endif %}
 
                     </div>
@@ -104,44 +175,104 @@
         </div>
     </nav>
 
-    <!-- Content Area with Sidebar and Products -->
     <div class="content-area">
-        <!-- Sidebar -->
         <div class="sidebar-container d-flex flex-column flex-shrink-0 p-3 text-bg-dark">
             <a href="/" class="d-flex align-items-center mb-md-0 me-md-auto text-white text-decoration-none">
-                <span class="fs-4">Бренди</span>
+                <span class="fs-4">Фільтри</span>
             </a>
             <hr>
-            <ul class="nav nav-pills flex-column gap-2 mb-auto mx-4">
-                <li>
-                    <div class="slide-container mb-5">
-                        <p class="mb-0 pb-0">Ціна (грн)</p>
-                        <input type="range" min="{{ min_price }}" max="{{ max_price }}" value="50" class="slider"
-                               id="myRange">
 
-                        <div class="d-flex justify-content-between mt-2">
-                            <span id="current-price">{{ min_price }}</span>
+            {% if selected_brands or selected_category_id or selected_price or search_query %}
+                <div class="active-filters mb-3">
+                    {% if search_query %}
+                        <div class="filter-badge">
+                            Пошук: {{ search_query }}
+                            <a href="{{ request.path }}?
+                                    {% for key, value in request.GET.items %}{% if key != 'q' %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
+                               class="remove-filter text-white">✕</a>
                         </div>
+                    {% endif %}
+
+                    {% if selected_category_id %}
+                        <div class="filter-badge">
+                            Категорія: {{ category.name }}
+                            <a href="{{ request.path }}?
+                                    {% for key, value in request.GET.items %}{% if key != 'category' %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
+                               class="remove-filter text-white">✕</a>
+                        </div>
+                    {% endif %}
+
+                    {% if selected_price %}
+                        <div class="filter-badge">
+                            Макс. ціна: {{ selected_price }} ₴
+                            <a href="{{ request.path }}?
+                                    {% for key, value in request.GET.items %}{% if key != 'price' %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
+                               class="remove-filter text-white">✕</a>
+
+                        </div>
+                    {% endif %}
+
+                    {% for brand in selected_brands %}
+                        <div class="filter-badge">
+                            Бренд: {{ brand }}
+                            <a href="{{ request.path }}?
+                                    {% for key, value in request.GET.items %}{% if key != 'brand' or value != brand %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
+                               class="remove-filter text-white">✕</a>
+                        </div>
+                    {% endfor %}
+
+                    <div class="mt-2">
+                        <a href="{{ request.path }}" class="btn btn-sm btn-outline-light">Очистити всі</a>
                     </div>
-                </li>
-                <li class="nav-item">
-                    <input type="checkbox" id="samsung">
-                    <label for="samsung">Samsung</label>
-                </li>
-                <li>
-                    <input type="checkbox" id="apple">
-                    <label for="apple">Apple</label>
-                </li>
-                <li>
-                    <input type="checkbox" id="asus">
-                    <label for="asus">Asus</label>
-                </li>
-                <li>
-                    <input type="checkbox" id="xiaomi">
-                    <label for="xiaomi">Xiaomi</label>
-                </li>
-                <!-- Additional brands -->
-            </ul>
+                </div>
+            {% endif %}
+
+            <form method="GET" action="{% url 'catalog' %}" id="filter-form">
+                {% if search_query %}
+                    <input type="hidden" name="q" value="{{ search_query }}">
+                {% endif %}
+
+                {% if selected_category_id %}
+                    <input type="hidden" name="category" value="{{ selected_category_id }}">
+                {% endif %}
+
+                <ul class="nav nav-pills flex-column gap-2 mb-auto">
+                    <li class="filter-section">
+                        <div class="filter-title">Ціна (грн)</div>
+                        <div class="slide-container mb-3">
+                            <input type="range" min="{{ min_price }}" max="{{ max_price }}"
+                                   value="{{ selected_price|default:max_price }}" class="slider"
+                                   id="myRange" name="price">
+
+                            <div class="position-relative mt-2">
+                                <span id="current-price">{{ selected_price|default:max_price }}</span>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="filter-section">
+                        <div class="filter-title">Бренди</div>
+                        <div class="brand-filters">
+                            {% for brand in brands %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="brand-{{ forloop.counter }}"
+                                           name="brand" value="{{ brand }}"
+                                           {% if brand in selected_brands %}checked{% endif %}>
+                                    <label class="form-check-label" for="brand-{{ forloop.counter }}">
+                                        {{ brand }}
+                                    </label>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted small">Немає доступних брендів</p>
+                            {% endfor %}
+                        </div>
+                    </li>
+
+                    <li>
+                        <button type="submit" class="btn btn-primary filter-btn">Застосувати фільтри</button>
+                    </li>
+                </ul>
+            </form>
         </div>
 
         <!-- Products Section -->
@@ -154,18 +285,28 @@
                     <h2 class="mb-4">Популярні товари</h2>
                 {% endif %}
 
-                <div class="products-container">
+                <!-- Filter summary -->
+                {% if products.count == 0 %}
+                    <div class="alert alert-info">
+                        За вашим запитом не знайдено жодного товару.
+                        <a href="{{ request.path }}">Очистити всі фільтри</a>
+                    </div>
+                {% else %}
+                    <p>Знайдено товарів: {{ products.count }}</p>
+                {% endif %}
 
+                <div class="products-container">
                     {% for product in products %}
                         <!-- Product Card -->
                         <div class="product-card card"
                              data-product-url="{% url 'product_detail' product.category product.model_name %}">
                             <!-- Remove the stretched-link -->
 
-                            <img src="{{ product.image_url }}" alt="Smartphone" class="product-img">
+                            <img src="{{ product.image_url }}" alt="{{ product.model_name }}" class="product-img">
 
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">{{ product.model_name }}</h5>
+                                <p class="text-muted small">{{ product.brand.name }}</p>
                                 <p class="card-text">{{ product.description }}</p>
 
                                 <div class="mt-auto d-flex justify-content-between align-items-center">
@@ -199,25 +340,41 @@
     </footer>
 </div>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const slider = document.getElementById('myRange');
+        const currentPrice = document.getElementById('current-price');
+
+        currentPrice.textContent = slider.value;
+        updatePricePosition(slider, currentPrice);
+    });
+
     const slider = document.getElementById('myRange');
     const currentPrice = document.getElementById('current-price');
 
     slider.addEventListener('input', function () {
+        currentPrice.textContent = this.value;
+
+        updatePricePosition(slider, currentPrice);
+    });
+
+    function updatePricePosition(slider, currentPrice) {
         const min = parseFloat(slider.min);
         const max = parseFloat(slider.max);
         const val = parseFloat(slider.value);
 
         const sliderWidth = slider.clientWidth;
-
         const percent = (val - min) / (max - min);
 
-        const thumbX = percent * sliderWidth + 20;
+        const thumbWidth = 16;
+        const thumbCenter = percent * sliderWidth;
+        const priceWidth = currentPrice.offsetWidth;
 
-        currentPrice.textContent = this.value;
-        currentPrice.textContent = val;
-        currentPrice.style.position = 'absolute';
-        currentPrice.style.left = thumbX + 'px';
-    });
+        const thumbX = thumbCenter - (priceWidth / 2);
+
+        const finalX = Math.max(0, Math.min(thumbX, sliderWidth - priceWidth));
+
+        currentPrice.style.left = finalX + 'px';
+    }
 </script>
 <script>
     document.querySelectorAll('.product-card').forEach(card => {
