@@ -83,6 +83,10 @@ def sign_in(request):
         if user is not None:
             login(request, user)
             request.session.save()
+
+            if user.role == 'seller':
+                return redirect('dashboard')
+
             # Get the next parameter if it exists
             next_url = request.POST.get('next', '/')
             return redirect(next_url)
@@ -103,6 +107,9 @@ def log_out(request):
     :param request: Http request object
     :return: sign in page
     """
+    if request.user.role == 'seller':
+        return redirect('sign_in')
+
     # Call the embedded Django method for logging out
     logout(request)
 
@@ -331,11 +338,10 @@ def dashboard(request):
     # get total number of products in the system
     total_product_count = Product.objects.count()
 
-
     return render(request, 'dashboard.html',
                   {'recent_orders_count': recent_orders_count,
                    'monthly_revenue': monthly_revenue,
-                  'total_product_count': total_product_count})
+                   'total_product_count': total_product_count})
 
 
 def product_detail(request, product_category: str, product_name: str):
@@ -346,6 +352,9 @@ def product_detail(request, product_category: str, product_name: str):
     :param product_name: str which specify product's name
     :return: html page with details of specific product by its category
     """
+
+    if request.user.role == 'seller':
+        return redirect('dashboard')
 
     # find category which connected to our product
     category = Category.objects.get(name=product_category)
@@ -407,6 +416,9 @@ def show_cart(request):
     :param request: Http request object
     :return: html page with cart's items
     """
+    if request.user.role == 'seller':
+        return redirect('dashboard')
+
     # get the cart from the session (keys are string IDs of products)
     cart = request.session.get('cart', {})
 
@@ -661,6 +673,9 @@ def catalog(request):
     :return: html-page with list of products
     with potential filters
     """
+
+    if request.user.role == 'seller':
+        return redirect('dashboard')
 
     # find all products into db
     products = Product.objects.all()

@@ -17,12 +17,12 @@
 
         .slide-container {
             position: relative;
-            padding-bottom: 20px; 
+            padding-bottom: 20px;
         }
-        
+
         #current-price {
             position: absolute;
-            left: 0; 
+            left: 0;
         }
 
         .sidebar-container form {
@@ -188,6 +188,7 @@
                         <div class="filter-badge">
                             Пошук: {{ search_query }}
                             <a href="{{ request.path }}?
+                                    
                                     {% for key, value in request.GET.items %}{% if key != 'q' %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
                                class="remove-filter text-white">✕</a>
                         </div>
@@ -197,6 +198,7 @@
                         <div class="filter-badge">
                             Категорія: {{ category.name }}
                             <a href="{{ request.path }}?
+                                    
                                     {% for key, value in request.GET.items %}{% if key != 'category' %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
                                class="remove-filter text-white">✕</a>
                         </div>
@@ -206,6 +208,7 @@
                         <div class="filter-badge">
                             Макс. ціна: {{ selected_price }} ₴
                             <a href="{{ request.path }}?
+                                    
                                     {% for key, value in request.GET.items %}{% if key != 'price' %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
                                class="remove-filter text-white">✕</a>
 
@@ -216,6 +219,7 @@
                         <div class="filter-badge">
                             Бренд: {{ brand }}
                             <a href="{{ request.path }}?
+                                    
                                     {% for key, value in request.GET.items %}{% if key != 'brand' or value != brand %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
                                class="remove-filter text-white">✕</a>
                         </div>
@@ -280,7 +284,13 @@
 
             {% if products %}
                 {% if category %}
-                    <h2 class="mb-4">{{ category.name }}</h2>
+                    <h2 class="mb-4">
+                        {% if category.name == 'laptop' %}
+                            Ноутбуки
+                        {% else %}
+                            Смартфони
+                        {% endif %}
+                    </h2>
                 {% else %}
                     <h2 class="mb-4">Популярні товари</h2>
                 {% endif %}
@@ -300,7 +310,6 @@
                         <!-- Product Card -->
                         <div class="product-card card"
                              data-product-url="{% url 'product_detail' product.category product.model_name %}">
-                            <!-- Remove the stretched-link -->
 
                             <img src="{{ product.image_url }}" alt="{{ product.model_name }}" class="product-img">
 

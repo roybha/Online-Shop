@@ -1,69 +1,53 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>Непідтверджені замовлення</title>
-  <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background-color: #eee;
-    }
-    .confirm-btn {
-      background-color: #28a745;
-      color: white;
-      padding: 6px 12px;
-      border: none;
-      cursor: pointer;
-    }
-    .confirm-btn:hover {
-      background-color: #218838;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Непідтверджені замовлення</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-  <h1>Непідтверджені замовлення</h1>
+<body class="bg-light py-4">
 
-  {% if orders %}
-    <table>
-      <thead>
-        <tr>
-          <th>Номер</th>
-          <th>Дата</th>
-          <th>Клієнт</th>
-          <th>Статус</th>
-          <th>Дія</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in orders %}
-          <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.order_date|date:"d.m.Y" }}</td>
-            <td>{{ order.user.username }}</td>
-            <td><span style="color: red;">В обробці</span></td>
-            <td>
-              <form action="{% url 'status_change' order.id %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="confirm-btn">Підтвердити</button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>Немає замовлень, які потребують підтвердження.</p>
-  {% endif %}
+<div class="container">
+    <h1 class="mb-4">Непідтверджені замовлення</h1>
 
-  <a href="{% url 'dashboard' %}">← Назад на головну</a>
+    {% if orders %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle bg-white shadow-sm">
+                <thead class="table-light">
+                <tr>
+                    <th scope="col">Номер</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Клієнт</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Дія</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.order_date|date:"d.m.Y" }}</td>
+                        <td>{{ order.user.username }}</td>
+                        <td><span class="badge bg-danger">В обробці</span></td>
+                        <td>
+                            <form action="{% url 'status_change' order.id %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">Підтвердити</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Немає замовлень, які потребують підтвердження.</div>
+    {% endif %}
+
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">← Назад на головну</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
