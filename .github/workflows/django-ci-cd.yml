@@ -1,0 +1,77 @@
+name: Django CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Tests
+      run: |
+        # Set environment variables needed for tests
+        export DJANGO_SETTINGS_MODULE=OnlineShop.settings
+        export DEBUG=True
+        export SECRET_KEY='django-insecure-testing-key-12345'
+        # Add any other environment variables your tests need
+        
+        # Run tests in myapp/tests directory
+        python manage.py test myapp.tests
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test  # This job will run only if the test job succeeds
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build and run container
+      run: |
+        # Build the Docker image
+        docker build -t online-shop:latest .
+        
+        # Run the container in detached mode
+        docker run -d -p 8000:8000 --name online-shop-container online-shop:latest
+        
+        # Wait for container to be ready (adjust sleep time as needed)
+        sleep 10
+        
+        # Check if container is running
+        docker ps | grep online-shop-container
+        
+        # You could add additional checks here to verify the application is working
+        # For example:
+        # curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/
+
+    # Optional: Push to registry if this is a release build
+    # - name: Login to Docker Hub
+    #   if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    #   uses: docker/login-action@v2
+    #   with:
+    #     username: ${{ secrets.DOCKER_HUB_USERNAME }}
+    #     password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    #
+    # - name: Push to Docker Hub
+    #   if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    #   run: |
+    #     docker tag online-shop:latest yourusername/online-shop:latest
+    #     docker push yourusername/online-shop:latest
