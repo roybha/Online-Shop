@@ -74,3 +74,15 @@ jobs:
         run: |
           docker tag online-shop:latest mariastashenko/online-shop:latest
           docker push mariastashenko/online-shop:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # This job will run only if the build job succeeds
+
+    steps:
+      - name: Deploy to Render
+        uses: JorgeLNJunior/render-deploy@v1.4.0
+        with:
+          service-id: d0eq8uje5dus73ds69jg
+          api-key: rnd_UdlyjSKbB9lkBdeciCXn1YJ7RlY5
+          wait-deploy: true
