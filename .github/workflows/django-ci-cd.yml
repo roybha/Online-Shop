@@ -83,6 +83,6 @@ jobs:
       - name: Deploy to Render
         uses: JorgeLNJunior/render-deploy@v1.4.0
         with:
-          service-id: d0eq8uje5dus73ds69jg
-          api-key: rnd_UdlyjSKbB9lkBdeciCXn1YJ7RlY5
-          wait-deploy: true
+          service_id: d0eq8uje5dus73ds69jg
+          api_key: rnd_UdlyjSKbB9lkBdeciCXn1YJ7RlY5
+          wait_deploy: true
