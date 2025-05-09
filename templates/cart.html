@@ -54,8 +54,6 @@
                                     </span> &#8372;
                                     <a href="{% url 'remove_from_cart' item.product.id %}" class="close">&#10005;</a>
                                 </div>
-
-
                             </div>
                         </div>
                     {% endfor %}
@@ -115,8 +113,7 @@
             if (shippingMatch) {
                 shippingCost = parseFloat(shippingMatch[0]);
                 total += shippingCost;
-
-                // UPDATE hidden input value
+                
                 document.getElementById('delivery_price').value = shippingCost;
             }
         }
