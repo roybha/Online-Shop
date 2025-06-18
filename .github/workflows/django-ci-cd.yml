@@ -67,7 +67,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: mariastashenko
-          password: dckr_pat_SKNA0zziK_EWy-_t0DFLQz71zoo
+          password: ${{secrets.DOCKER_PASSWORD}}
 
       - name: Push to Docker Hub
         if: github.ref == 'refs/heads/main'
@@ -83,6 +83,6 @@ jobs:
       - name: Deploy to Render
         uses: JorgeLNJunior/render-deploy@v1.4.0
         with:
-          service_id: srv-d0eq8uje5dus73ds69jg
-          api_key: rnd_UdlyjSKbB9lkBdeciCXn1YJ7RlY5
+          service_id: ${{secrets.RENDER_SERVICE_ID}}
+          api_key: ${{secrets.RENDER_API_KEY}
           wait_deploy: true
